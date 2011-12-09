@@ -26,7 +26,57 @@
     <property name="user.properties.file" value="build.properties"/>
     <property file="${user.home}/.sunspotfrc.properties"/>
     <import file="${sunspot.home}/build.xml"/>
-
+			   
+	<target name="compile-test">
+		<mkdir dir="{build.dir}"/>
+		
+		<javac srcdir="${tests.dir}"
+			   destdir="${build.dir}"
+			   target="1.2"
+			   includeAntRuntime="no"
+			   includeJavaRuntime="no"
+			   debug="yes"
+			   include="${spot.javac.include.src}"
+			   exclude="${spot.javac.exclude.src}"
+			   fork="yes" >
+			   
+		    <bootclasspath>
+				<pathelement location="${sunspot.bootclasspath}" />
+			</bootclasspath>
+      
+			<classpath>
+				<pathelement location="${lib.dir}" />
+				<pathelement location="${sunspot.classpath}" />
+				<pathelement location="${utility.jars.on.classpath}" />
+				<pathelement location="${junit.path}" />
+				<pathelement location="${mockito.path}" />
+			</classpath>
+		
+		</javac>
+        </target>
+	
+  <target name="run-test" depends="compile-test">
+    <mkdir dir="${junit.reports.dir}" />
+    
+    <junit printsummary="yes" haltonfailure="no">
+      <classpath>
+        <pathelement location="${build.dir}" />
+        <pathelement location="${lib.dir}" />
+        <pathelement location="${sunspot.classpath}" />
+        <pathelement location="${junit.path}" />
+        <pathelement location="${mockito.path}" />
+      </classpath>
+      
+      <formatter type="plain" />
+      <formatter type="plain" usefile="false"/>
+      
+      <batchtest fork="yes" todir="${junit.reports.dir}">
+        <fileset dir="${build.dir}">
+          <include name="**/*Test.class" />
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>		
     <!--
 
     This file imports the master build file for compiling and deploying sunspot

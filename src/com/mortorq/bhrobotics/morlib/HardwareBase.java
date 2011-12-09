@@ -11,7 +11,7 @@ public abstract class HardwareBase implements Tickable {
 		while(e.hasMoreElements()) {
 			Pattern pattern = (Pattern)e.nextElement();
 			if (pattern.matches()) {
-				Reactor.Instance();
+				Reactor.Instance().submit(h,pattern.parse());
 				return true;
 			}
 		}
