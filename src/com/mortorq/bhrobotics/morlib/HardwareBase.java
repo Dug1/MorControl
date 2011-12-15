@@ -8,6 +8,7 @@ public abstract class HardwareBase implements Tickable {
 	
 	public boolean register(String s, Handler h) {
 		Enumeration e = matchers.elements();
+		boolean registered = false;
 		while(e.hasMoreElements()) {
 			Pattern pattern = (Pattern)e.nextElement();
 			if (pattern.matches()) {

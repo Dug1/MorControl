@@ -30,6 +30,12 @@
                     <location>src</location>
                     <encoding>windows-1252</encoding>
                 </source-folder>
+                <source-folder>
+                    <label>test</label>
+                    <type>java</type>
+                    <location>test</location>
+                    <encoding>windows-1252</encoding>
+                </source-folder>
             </folders>
             <ide-actions>
                 <action name="build">
@@ -53,6 +59,9 @@
                 <action name="javadoc">
                     <target>javadoc</target>
                 </action>
+                <action name="test">
+                    <target>run-test</target>
+                </action>
             </ide-actions>
             <export>
                 <type>folder</type>
@@ -65,17 +74,22 @@
                         <label>src</label>
                         <location>src</location>
                     </source-folder>
+                    <source-folder style="packages">
+                        <label>test</label>
+                        <location>test</location>
+                    </source-folder>
                     <source-file>
                         <location>build.xml</location>
                     </source-file>
                 </items>
                 <context-menu>
                     <ide-action name="build"/>
-                    <ide-action name="clean"/>
-                    <ide-action name="run"/>
                     <ide-action name="rebuild"/>
-                    <ide-action name="debug"/>
+                    <ide-action name="clean"/>
                     <ide-action name="javadoc"/>
+                    <ide-action name="run"/>
+                    <ide-action name="test"/>
+                    <ide-action name="debug"/>
                     <action>
                         <label>Sun SPOT-deploy</label>
                         <target>deploy</target>
@@ -89,12 +103,17 @@
             </view>
             <subprojects/>
         </general-data>
-        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
             <compilation-unit>
                 <package-root>src</package-root>
                 <classpath mode="boot">${sunspot.bootclasspath}</classpath>
-                <classpath mode="compile">C:/Documents and Settings/Daguan Lu/sunspotfrcsdk/lib/WPILibJ/classes.jar;lib/backport-util-concurrent.jar;lib/mockito-all-1.9.0-rc1.jar</classpath>
+                <classpath mode="compile">C:/Documents and Settings/Daguan Lu/sunspotfrcsdk/lib/WPILibJ/classes.jar;lib/backport-util-concurrent.jar;lib/mockito-all-1.9.0-rc1.jar;lib/junit-4.10.jar</classpath>
                 <built-to>build</built-to>
+                <source-level>1.4</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>test</package-root>
+                <unit-tests/>
                 <source-level>1.4</source-level>
             </compilation-unit>
         </java-data>
