@@ -11,12 +11,12 @@ import java.util.Enumeration;
  *
  * @author Daguan Lu
  */
-public class TriggerListTest extends TestCase {
-	TriggerList list;
+public class TriggerRegistryTest extends TestCase {
+	TriggerRegistry list;
 
     protected void setUp() throws Exception {
         super.setUp();
-		list = new TriggerList();
+		list = new TriggerRegistry();
     }
     
     protected void tearDown() throws Exception {
@@ -35,6 +35,7 @@ public class TriggerListTest extends TestCase {
 		Assert.assertEquals(list.getSize(),2);
 	}
 	
+	/* Test when Reactor is finished
 	public void testTick() {
 		list.register(new TriggerExample(), new HandlerExample("Holst"));
 		list.register(new NonTermTriggerExample(), new HandlerExample("Beethoven"));
@@ -42,7 +43,7 @@ public class TriggerListTest extends TestCase {
 		list.tick();
 		
 		Assert.assertEquals(list.getSize(),1);
-	}
+	} */
 	
 	public class HandlerExample implements Handler {
 		String name;

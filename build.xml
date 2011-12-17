@@ -23,10 +23,10 @@
     explanations, see the file ${sunspot.home}/default.properties.
 
     --> 	
-
     <property name="user.classpath" value="build.properties"/>
     <property file="${user.home}/.sunspotfrc.properties"/>
     <property file="build.properties"/>
+    <import file="${sunspot.home}/build.xml"/>
 			   
 	<target name="compile-test">
 		<mkdir dir="${build.dir}"/>
@@ -41,20 +41,20 @@
 			   includes="${spot.javac.include.src}"
 			   excludes="${spot.javac.exclude.src}"
 			   fork="yes" >
-			   
-			<include name="**/*.java"/>
+			
+			<include name = "**/*.java"/>
 			
 		    <bootclasspath>
 				<pathelement location="${sunspot.bootclasspath}" />
 			</bootclasspath>
       
 			<classpath>
-				<pathelement location="${lib.dir}" />
 				<pathelement location="${sunspot.classpath}" />
 				<pathelement location="${utility.jars.on.classpath}" />
 				<pathelement location="${junit.path}" />
 				<pathelement location="${mockito.path}" />
 				<pathelement location="${src.dir}"/>
+				<pathelement location="${build.dir}"/>
 			</classpath>
 		
 		</javac>
@@ -67,7 +67,6 @@
       <classpath>
         <pathelement location="${build.dir}" />
 		<pathelement location="${utility.jars.on.classpath}"/> 
-        <pathelement location="${lib.dir}" />
         <pathelement location="${sunspot.classpath}" />
         <pathelement location="${junit.path}" />
         <pathelement location="${mockito.path}" />

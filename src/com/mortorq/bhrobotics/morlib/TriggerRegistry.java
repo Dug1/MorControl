@@ -3,14 +3,14 @@ package com.mortorq.bhrobotics.morlib;
 import java.util.Hashtable;
 import java.util.Enumeration;
 
-public class TriggerList implements Tickable{
+public class TriggerRegistry implements Tickable{
 	private Hashtable relations;
 	
-	public TriggerList() {
+	public TriggerRegistry() {
 		relations = new Hashtable();
 	}
 	
-	public TriggerList(int intial) {
+	public TriggerRegistry(int intial) {
 		relations = new Hashtable(intial);
 	}
 	

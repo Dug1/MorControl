@@ -1,0 +1,5 @@
+Testsuite: com.mortorq.bhrobotics.morlib.TriggerRegistryTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.016 sec
+
+Testcase: testInit took 0.016 sec
+Testcase: testRegister took 0 sec

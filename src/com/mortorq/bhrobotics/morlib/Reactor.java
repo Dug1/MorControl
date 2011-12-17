@@ -1,5 +1,6 @@
 package com.mortorq.bhrobotics.morlib;
 
+import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
 import edu.emory.mathcs.backport.java.util.concurrent.Callable;
 import edu.emory.mathcs.backport.java.util.concurrent.Executors;
 import edu.emory.mathcs.backport.java.util.concurrent.ScheduledFuture;
@@ -61,21 +62,19 @@ public class Reactor implements Tickable {
             return new Task(h);
 	}
 	
-	public ScheduledFuture submit(Handler h, EventType c) {
-		ScheduledFuture result = null;
-		if (c.getHandlerType() == EventType.CALLABLE_HANDLER) {
-			threadPool.schedule(createCallable(h),c.getDelay(),c.getTimeUnit()); 
-		} else {
-			if (c.getIsPeriodic()) {
-				if(c.getAwaitsTermination()) {
-					result = threadPool.scheduleWithFixedDelay(createRunnable(h), c.getDelay(), c.getPeriod(), c.getTimeUnit());
-				} else {
-					result = threadPool.scheduleAtFixedRate(createRunnable(h), c.getDelay(), c.getPeriod(), c.getTimeUnit());
-				}
-			} else {
-				result = threadPool.schedule(createRunnable(h), c.getDelay(), c.getTimeUnit());
-			}
-		}
-		return result;
+	public ScheduledFuture schedule(Handler h, long delay) {
+		return threadPool.schedule(createRunnable(h),delay,TimeUnit.MILLISECONDS);
+	}
+	
+	public ScheduledFuture scheduleInterval(Handler h, long delay, long period) {
+		return threadPool.scheduleAtFixedRate(createRunnable(h),delay,period,TimeUnit.MILLISECONDS);
+	}
+	
+	public ScheduledFuture scheduleAwaitedInterval(Handler h, long delay, long period) {
+		return threadPool.scheduleWithFixedDelay(createRunnable(h),delay,period,TimeUnit.MILLISECONDS);
+	}
+	
+	public ScheduledFuture scheduleCallable(Handler h, long delay) {
+		return threadPool.schedule(createCallable(h),delay,TimeUnit.MILLISECONDS);
 	}
 }
