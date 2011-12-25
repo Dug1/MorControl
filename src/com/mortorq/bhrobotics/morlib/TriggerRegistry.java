@@ -14,6 +14,10 @@ public class TriggerRegistry implements Tickable{
 		relations = new Hashtable(intial);
 	}
 	
+	public void remove(Trigger t) {
+		relations.remove(t);
+	}
+	
 	public void clear() {
 		relations.clear();
 	}
@@ -52,13 +56,10 @@ public class TriggerRegistry implements Tickable{
 			if(current.isTriggered()) {
 				Handler[] handlers = (Handler[])relations.get(current);
 				for(int i=0; i<handlers.length; i++) {
-					//Change upon completing reactor
-					System.out.println(current.toString()+ " called " + handlers[i].toString());
+					Reactor.Instance().submit(handlers[i], current.getConfig());
 				}
 			}
-			if(current.isFinished()) {
-				relations.remove(current);
-			}
+			current.remove();
 		}
 	}
 }

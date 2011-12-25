@@ -35,15 +35,14 @@ public class TriggerRegistryTest extends TestCase {
 		Assert.assertEquals(list.getSize(),2);
 	}
 	
-	/* Test when Reactor is finished
-	public void testTick() {
-		list.register(new TriggerExample(), new HandlerExample("Holst"));
-		list.register(new NonTermTriggerExample(), new HandlerExample("Beethoven"));
+	public void remove() {
+		TriggerExample holst = new TriggerExample();
+		list.register(holst, new HandlerExample("Holst"));
 		
-		list.tick();
+		list.remove(holst);
 		
-		Assert.assertEquals(list.getSize(),1);
-	} */
+		Assert.assertEquals(list.getSize(),0);
+	}
 	
 	public class HandlerExample implements Handler {
 		String name;
@@ -63,8 +62,12 @@ public class TriggerRegistryTest extends TestCase {
 			return true;
 		}
 		
-		public boolean isFinished() {
-			return true;
+		public Object getConfig() {
+			return new Config(0, false);
+		}
+		
+		public void remove() {
+			Reactor.Instance().getList().remove(this);
 		}
 	}
 	
@@ -72,9 +75,11 @@ public class TriggerRegistryTest extends TestCase {
 		public boolean isTriggered() {
 			return true;
 		}
+		public Object getConfig() {
+			return new Config(0, false);
+		}
 		
-		public boolean isFinished() {
-			return false;
+		public void remove() {
 		}
 	}
 }

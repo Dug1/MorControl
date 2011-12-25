@@ -11,6 +11,7 @@ public class Reactor implements Tickable {
 	private static Reactor reactor = null;
 	private int poolSize;
 	private ScheduledExecutorService threadPool;
+	private TriggerRegistry list;
 	
 	private Reactor(int pool) {
 		poolSize = pool;
@@ -18,13 +19,18 @@ public class Reactor implements Tickable {
 	
 	public static Reactor Instance() {
 		if(reactor == null) {
-			reactor = new Reactor(5);
+			reactor = new Reactor(2);
 		}
 		return reactor;
 	}
 	
+	public TriggerRegistry getList() {
+		return list;
+	}
+	
 	public void start() {
 		threadPool = Executors.newScheduledThreadPool(poolSize);
+		list = new TriggerRegistry();
 	}
 	
 	public void stop() {
@@ -32,9 +38,10 @@ public class Reactor implements Tickable {
 	}
 	
 	public void tick() {
+		list.tick();
 	} 
 	
-	public Runnable createRunnable(Handler h) {
+	private Runnable createRunnable(Handler h) {
             class Task implements Runnable {
                 Handler handler;
                 Task(Handler h) {
@@ -48,7 +55,7 @@ public class Reactor implements Tickable {
             return new Task(h);
 	}
 	
-	public Callable createCallable(Handler h) {
+	private Callable createCallable(Handler h) {
             class Task implements Callable {
                 Handler handler;
                 Task(Handler h) {
@@ -61,7 +68,7 @@ public class Reactor implements Tickable {
             }
             return new Task(h);
 	}
-	
+
 	public ScheduledFuture schedule(Handler h, long delay) {
 		return threadPool.schedule(createRunnable(h),delay,TimeUnit.MILLISECONDS);
 	}
@@ -76,5 +83,32 @@ public class Reactor implements Tickable {
 	
 	public ScheduledFuture scheduleCallable(Handler h, long delay) {
 		return threadPool.schedule(createCallable(h),delay,TimeUnit.MILLISECONDS);
+	}
+	
+	public ScheduledFuture submit(Handler h, Object o) {
+		if (o instanceof PeriodicConfig) {
+			PeriodicConfig p = (PeriodicConfig) o;
+			if (p.awaitsPrevious()) {
+				return scheduleAwaitedInterval(h, p.getDelay(), p.getPeriod());
+			} else {
+				return scheduleInterval(h, p.getDelay(), p.getPeriod());
+			}
+		} else if(o instanceof Config) {
+			Config c = (Config)o; 
+			if (c.isCallable()) {
+				return scheduleCallable(h, c.getDelay());
+			} else {
+				return schedule(h, c.getDelay());
+			}
+		}	
+		return null;
+	}
+	
+	public void register(Trigger trigger, Handler[] handlers) {
+		list.register(trigger, handlers);
+	}	
+	
+	public void register(Trigger trigger, Handler handler) {
+		list.register(trigger, handler);
 	}
 }
