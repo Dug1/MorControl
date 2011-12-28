@@ -14,7 +14,7 @@ public class TriggerRegistry implements Tickable{
 		relations = new Hashtable(intial);
 	}
 	
-	public void remove(Trigger t) {
+	public void tryRemove(Trigger t) {
 		relations.remove(t);
 	}
 	
@@ -59,7 +59,6 @@ public class TriggerRegistry implements Tickable{
 					Reactor.Instance().submit(handlers[i], current.getConfig());
 				}
 			}
-			current.remove();
 		}
 	}
 }

@@ -23,12 +23,12 @@
     explanations, see the file ${sunspot.home}/default.properties.
 
     --> 	
-    <property name="user.classpath" value="build.properties"/>
+    <property name="user.properties.file" value="build.properties"/>
     <property file="${user.home}/.sunspotfrc.properties"/>
     <property file="build.properties"/>
     <import file="${sunspot.home}/build.xml"/>
 			   
-	<target name="compile-test">
+	<target name="compile-test" depends="compile">
 		<mkdir dir="${build.dir}"/>
 		
 		<javac sourcepath="" srcdir="${test.dir}"
@@ -50,7 +50,9 @@
       
 			<classpath>
 				<pathelement location="${sunspot.classpath}" />
-				<pathelement location="${utility.jars.on.classpath}" />
+				<pathelement location="${jregex.path}" />
+				<pathelement location="${squawk.path}" />
+				<pathelement location="${concurrent.path}" />
 				<pathelement location="${junit.path}" />
 				<pathelement location="${mockito.path}" />
 				<pathelement location="${src.dir}"/>
@@ -66,7 +68,9 @@
     <junit printsummary="yes" haltonfailure="no">
       <classpath>
         <pathelement location="${build.dir}" />
-		<pathelement location="${utility.jars.on.classpath}"/> 
+		<pathelement location="${jregex.path}" />
+		<pathelement location="${squawk.path}" />
+		<pathelement location="${concurrent.path}" />
         <pathelement location="${sunspot.classpath}" />
         <pathelement location="${junit.path}" />
         <pathelement location="${mockito.path}" />

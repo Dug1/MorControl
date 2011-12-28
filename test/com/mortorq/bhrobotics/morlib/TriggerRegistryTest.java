@@ -35,11 +35,11 @@ public class TriggerRegistryTest extends TestCase {
 		Assert.assertEquals(list.getSize(),2);
 	}
 	
-	public void remove() {
+	public void tryRemove() {
 		TriggerExample holst = new TriggerExample();
 		list.register(holst, new HandlerExample("Holst"));
 		
-		list.remove(holst);
+		list.tryRemove(holst);
 		
 		Assert.assertEquals(list.getSize(),0);
 	}
@@ -58,7 +58,14 @@ public class TriggerRegistryTest extends TestCase {
 	}
 	
 	public class TriggerExample implements Trigger {
+		private boolean markedForRemoval = false;
+		
 		public boolean isTriggered() {
+			if (markedForRemoval) {
+				tryRemove();
+				return false;
+			} 
+			markedForRemoval = true;
 			return true;
 		}
 		
@@ -66,8 +73,8 @@ public class TriggerRegistryTest extends TestCase {
 			return new Config(0, false);
 		}
 		
-		public void remove() {
-			Reactor.Instance().getList().remove(this);
+		public void tryRemove() {
+			Reactor.Instance().getList().tryRemove(this);
 		}
 	}
 	
@@ -77,9 +84,6 @@ public class TriggerRegistryTest extends TestCase {
 		}
 		public Object getConfig() {
 			return new Config(0, false);
-		}
-		
-		public void remove() {
 		}
 	}
 }

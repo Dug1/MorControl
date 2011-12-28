@@ -98,6 +98,7 @@ public class ReactorTest extends TestCase {
 		Assert.assertEquals(2,Reactor.Instance().getList().getSize());
 		
 		Reactor.Instance().tick();
+		Reactor.Instance().tick();
 		try {
 			thread.sleep(1000);
 		} catch(InterruptedException e) {Assert.fail("Main thread was interrputed");}
@@ -127,7 +128,14 @@ public class ReactorTest extends TestCase {
 	}
 	
 	public class TriggerExample implements Trigger {
+		public boolean markedForRemoval = false;
+		
 		public boolean isTriggered() {
+			if (markedForRemoval) {
+				tryRemove();
+				return false;
+			} 
+			markedForRemoval = true;
 			return true;
 		}
 		
@@ -135,8 +143,8 @@ public class ReactorTest extends TestCase {
 			return new Config((long)0, false);
 		}
 		
-		public void remove() {
-			Reactor.Instance().getList().remove(this);
+		public void tryRemove() {
+			Reactor.Instance().getList().tryRemove(this);
 		}
 	}
 	
@@ -147,49 +155,66 @@ public class ReactorTest extends TestCase {
 		public Object getConfig() {
 			return new Config((long)0, false);
 		} 
-		
-		public void remove() {
-		}
 	}
 	
 	public class PeriodicTriggerExample implements Trigger {
 		public int times = 0;
+		public boolean markedForRemoval = false;
 		
 		public boolean isTriggered() {
+			if (markedForRemoval) {
+				tryRemove();
+				return false;
+			} 
+			markedForRemoval = true;
 			return true;
 		}
 		public Object getConfig() {
 			return new PeriodicConfig((long)0, (long)500, false);
 		}
 		
-		public void remove() {
-			Reactor.Instance().getList().remove(this);
+		public void tryRemove() {
+			Reactor.Instance().getList().tryRemove(this);
 		}
 	}
 	
 	public class CallableTriggerExample implements Trigger {
+		public boolean markedForRemoval = false;
+		
 		public boolean isTriggered() {
+			if (markedForRemoval) {
+				tryRemove();
+				return false;
+			} 
+			markedForRemoval = true;
 			return true;
 		}
 		public Object getConfig() {
 			return new Config((long)0, true);
 		}
 		
-		public void remove() {
-			Reactor.Instance().getList().remove(this);
+		public void tryRemove() {
+			Reactor.Instance().getList().tryRemove(this);
 		}
 	}
 	
 	public class AwaitedTriggerExample implements Trigger {
+		public boolean markedForRemoval = false;
+		
 		public boolean isTriggered() {
+			if (markedForRemoval) {
+				tryRemove();
+				return false;
+			} 
+			markedForRemoval = true;
 			return true;
 		}
 		public Object getConfig() {
 			return new PeriodicConfig((long)0, (long)500,true);
 		}
 		
-		public void remove() {
-			Reactor.Instance().getList().remove(this);
+		public void tryRemove() {
+			Reactor.Instance().getList().tryRemove(this);
 		}
 	}
 }	
