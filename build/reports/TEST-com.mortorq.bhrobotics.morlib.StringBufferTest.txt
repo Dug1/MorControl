@@ -1,9 +1,9 @@
 Testsuite: com.mortorq.bhrobotics.morlib.StringBufferTest
-Tests run: 6, Failures: 0, Errors: 0, Time elapsed: 0.062 sec
+Tests run: 6, Failures: 0, Errors: 0, Time elapsed: 0.015 sec
 
 Testcase: testInit took 0.015 sec
-Testcase: testTokenizer took 0 sec
-Testcase: testIterativeRead took 0.016 sec
+Testcase: testIterativeRead took 0 sec
 Testcase: testReadOne took 0 sec
-Testcase: testRemove took 0.015 sec
+Testcase: testRemove took 0 sec
 Testcase: testReplace took 0 sec
+Testcase: testTokenizer took 0 sec

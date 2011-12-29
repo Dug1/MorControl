@@ -1,0 +1,6 @@
+Testsuite: com.mortorq.bhrobotics.morlib.OrExpressionTest
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.063 sec
+
+Testcase: testInit took 0 sec
+Testcase: testMatches took 0.047 sec
+Testcase: testParse took 0 sec

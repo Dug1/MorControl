@@ -1,6 +1,7 @@
 Testsuite: com.mortorq.bhrobotics.morlib.ReactorTest
-Tests run: 6, Failures: 0, Errors: 0, Time elapsed: 11.11 sec
+Tests run: 6, Failures: 0, Errors: 0, Time elapsed: 11.125 sec
 ------------- Standard Output ---------------
+Schrödinger has been called to play with cats!
 Heisenberg has been called to muddle with matrices!
 Curie has been called to make thing glow!
 Fermi has been called to create a reactor!
@@ -19,10 +20,6 @@ Fermi has been called to create a reactor!
 Oppenheimer has been called to blow things up!
 Fermi has been called to create a reactor!
 Oppenheimer has been called to blow things up!
-Feynam has been called to draw diagrams!
-Gell-Mann has been called to name new flavors!
-Feynam has been called to draw diagrams!
-Schrödinger has been called to play with cats!
 Einstein has been called to unravel Newtonian physics!
 Einstein has been called to unravel Newtonian physics!
 Einstein has been called to unravel Newtonian physics!
@@ -32,11 +29,14 @@ Einstein has been called to unravel Newtonian physics!
 Einstein has been called to unravel Newtonian physics!
 Einstein has been called to unravel Newtonian physics!
 Bohr has been called to discover the mysteries of the atom!
+Feynam has been called to draw diagrams!
+Gell-Mann has been called to name new flavors!
+Feynam has been called to draw diagrams!
 ------------- ---------------- ---------------
 
-Testcase: testSubmit took 4.11 sec
-Testcase: testProcess took 1 sec
-Testcase: testScheduleCallable took 1 sec
+Testcase: testScheduleCallable took 1.094 sec
+Testcase: testSubmit took 4.015 sec
 Testcase: testScheduleInterval took 4 sec
 Testcase: testInit took 0 sec
 Testcase: testSchedule took 1 sec
+Testcase: testProcess took 1 sec

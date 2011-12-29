@@ -6,5 +6,5 @@ public interface Node {
 	public String getType();
 	public void setType(String name);
 	public void addNode(Node e);
-	public Vector getChildren();
+	public Node[] getChildren();
 }

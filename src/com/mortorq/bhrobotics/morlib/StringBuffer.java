@@ -28,7 +28,9 @@ public class StringBuffer {
 	
 	public void replace(String s) {
 		this.remove();
-		tokens.insertElementAt(s,0);
+		if (!s.equals("")) {
+			tokens.insertElementAt(s,0);
+		}
 	}
 	
 	public boolean hasMoreTokens() {

@@ -1,5 +1,5 @@
 Testsuite: com.mortorq.bhrobotics.morlib.InterpreterTest
-Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.032 sec
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.031 sec
 ------------- Standard Output ---------------
 ------------------------------------------------------------
 ( has been matched!
@@ -11,6 +11,6 @@ test)
 ------------------------------------------------------------
 ------------- ---------------- ---------------
 
+Testcase: testModifyPatternList took 0.015 sec
 Testcase: testInterpret took 0.016 sec
 Testcase: testInit took 0 sec
-Testcase: testModifyPatternList took 0 sec

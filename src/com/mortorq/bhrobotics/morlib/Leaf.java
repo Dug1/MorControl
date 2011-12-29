@@ -14,8 +14,8 @@ public class Leaf implements Node {
 	public void addNode(Node child)  {
 	}
 	
-	public Vector getChildren() {
-		return new Vector();
+	public Node[] getChildren() {
+		return new Node[0];
 	}
 	
 	public void setType(String t) {
