@@ -62,6 +62,10 @@ public class InterpreterTest extends TestCase {
 	public class TestLeftExpression implements Expression {
 		public boolean hasBeenCalled = false;
 		
+		public String getType() {
+			return "Test";
+		}
+		
 		public boolean matches(String argument) {
 			return (argument.equals("("));
 		}
@@ -76,10 +80,18 @@ public class InterpreterTest extends TestCase {
 		
 		public void clean()	{ 
 		}
+		
+		public Trigger makeTrigger(Node tree) {
+			return null;
+		}
 	}		
 	
 	public class TestRightExpression implements Expression {
 		public boolean hasBeenCalled = false;
+		
+		public String getType() {
+			return "Test";
+		}
 		
 		public boolean matches(String argument) {
 			return (argument.equals(")"));
@@ -95,10 +107,18 @@ public class InterpreterTest extends TestCase {
 		
 		public void clean()	{ 
 		}
+		
+		public Trigger makeTrigger(Node tree) {
+			return null;
+		}
 	}
 	
 	public class TestExpression implements Expression {
 		public boolean hasBeenCalled = false;
+		
+		public String getType() {
+			return "Test";
+		}
 		
 		public boolean matches(String argument) {
 			return (argument.equals("test"));
@@ -113,6 +133,10 @@ public class InterpreterTest extends TestCase {
 		}
 		
 		public void clean()	{ 
+		}
+		
+		public Trigger makeTrigger(Node tree) {
+			return null;
 		}
 	}	
 }

@@ -7,7 +7,7 @@ public class OnceExpressionTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		tiberius = new OnceExpression();		
+		tiberius = new OnceExpression();
 	}
 	
 	public void testMatches() {
@@ -18,21 +18,21 @@ public class OnceExpressionTest extends TestCase {
 	
 	public void testParse() {
 		StringBuffer buffer = new StringBuffer("once");
-		Branch tree = new Branch("Container");
+		Branch tree = new Branch(ContainerExpression.TYPE);
 		
 		Context c = tiberius.parse(buffer, tree);
 		
-		Leaf child = (Leaf)c.currentNode.getChildren()[0];
+		Node child = c.currentNode.getChildren()[0];
 		Assert.assertEquals(0, c.buffer.size());
-		Assert.assertEquals("Once", child.getType());
+		Assert.assertEquals(OnceExpression.TYPE, child.getType());
 		
 		buffer = new StringBuffer("once and button 5 pressed");
-		tree = new Branch("Container");
+		tree = new Branch(ContainerExpression.TYPE);
 		
 		c = tiberius.parse(buffer, tree);
 		
-		child = (Leaf)c.currentNode.getChildren()[0];
+		child = c.currentNode.getChildren()[0];
 		Assert.assertEquals(1, c.buffer.size());
-		Assert.assertEquals("Once", child.getType());
+		Assert.assertEquals(OnceExpression.TYPE, child.getType());
 	}
 }

@@ -19,21 +19,21 @@ public class TickExpressionTest extends TestCase {
 	
 	public void testParse() {
 		StringBuffer buffer = new StringBuffer("every tick");
-		Branch tree = new Branch("Container");
+		Branch tree = new Branch(ContainerExpression.TYPE);
 		
 		Context c = diocletian.parse(buffer, tree);
 		
 		Leaf child = (Leaf)c.currentNode.getChildren()[0];
 		Assert.assertEquals(0, c.buffer.size());
-		Assert.assertEquals("Tick", child.getType());
+		Assert.assertEquals(TickExpression.TYPE, child.getType());
 		
 		buffer = new StringBuffer("every tick and button 5 pressed");
-		tree = new Branch("Container");
+		tree = new Branch(ContainerExpression.TYPE);
 		
 		c = diocletian.parse(buffer, tree);
 		
 		child = (Leaf)c.currentNode.getChildren()[0];
 		Assert.assertEquals(1, c.buffer.size());
-		Assert.assertEquals("Tick", child.getType());
+		Assert.assertEquals(TickExpression.TYPE, child.getType());
 	}
 }

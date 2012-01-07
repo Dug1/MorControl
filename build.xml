@@ -51,6 +51,7 @@
 			<classpath>
 				<pathelement location="${sunspot.classpath}" />
 				<pathelement location="${jregex.path}" />
+				<pathelement location="${java-ext.path}" />
 				<pathelement location="${squawk.path}" />
 				<pathelement location="${concurrent.path}" />
 				<pathelement location="${junit.path}" />
@@ -69,6 +70,7 @@
       <classpath>
         <pathelement location="${build.dir}" />
 		<pathelement location="${jregex.path}" />
+		<pathelement location="${java-ext.path}" />
 		<pathelement location="${squawk.path}" />
 		<pathelement location="${concurrent.path}" />
         <pathelement location="${sunspot.classpath}" />

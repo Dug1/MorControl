@@ -1,0 +1,9 @@
+Testsuite: com.mortorq.bhrobotics.morlib.OnceTriggerTest
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 1.156 sec
+------------- Standard Output ---------------
+TROY!!!
+------------- ---------------- ---------------
+
+Testcase: testInit took 0.015 sec
+Testcase: testConfig took 0 sec
+Testcase: testSubmit took 1.109 sec

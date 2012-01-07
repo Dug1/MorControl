@@ -1,6 +1,6 @@
 Testsuite: com.mortorq.bhrobotics.morlib.ContainerExpressionTest
-Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.109 sec
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.141 sec
 
-Testcase: testInit took 0.093 sec
+Testcase: testInit took 0.109 sec
 Testcase: testMatches took 0 sec
-Testcase: testParse took 0.016 sec
+Testcase: testParse took 0 sec

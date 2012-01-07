@@ -1,0 +1,20 @@
+Testsuite: com.mortorq.bhrobotics.morlib.UntilTriggerTest
+Tests run: 3, Failures: 2, Errors: 0, Time elapsed: 6.234 sec
+------------- Standard Output ---------------
+TROY!!!
+TROY!!!
+------------- ---------------- ---------------
+
+Testcase: testInit took 0.171 sec
+Testcase: testConfig took 0.016 sec
+	FAILED
+expected:<5000> but was:<0>
+junit.framework.AssertionFailedError: expected:<5000> but was:<0>
+	at com.mortorq.bhrobotics.morlib.UntilTriggerTest.testConfig(UntilTriggerTest.java:34)
+
+Testcase: testSubmit took 6.016 sec
+	FAILED
+expected:<0> but was:<1>
+junit.framework.AssertionFailedError: expected:<0> but was:<1>
+	at com.mortorq.bhrobotics.morlib.UntilTriggerTest.testSubmit(UntilTriggerTest.java:58)
+

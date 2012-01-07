@@ -20,23 +20,25 @@ public class EveryExpressionTest extends TestCase {
 	
 	public void testParse() {
 		StringBuffer buffer = new StringBuffer("every 1 second");
-		Branch tree = new Branch("Container");
+		Branch tree = new Branch(ContainerExpression.TYPE);
 		
 		Context c = trajan.parse(buffer, tree);
 		
-		Leaf child = (Leaf)c.currentNode.getChildren()[0];
+		Node child = c.currentNode.getChildren()[0];
 		Assert.assertEquals(0, c.buffer.size());
-		Assert.assertEquals("Every", child.getType());
-		Assert.assertEquals("1 second", child.getData());
+		Assert.assertEquals(EveryExpression.TYPE, child.getType());
+		Assert.assertEquals("1", (String)child.getData(Interpreter.PERIOD));
+		Assert.assertEquals("second", (String)child.getData(Interpreter.PERIOD_UNIT));
 		
-		buffer = new StringBuffer("every 500 millisecond and button 5 pressed");
-		tree = new Branch("Container");
+		buffer = new StringBuffer("every 500 milliseconds and button 5 pressed");
+		tree = new Branch(ContainerExpression.TYPE);
 		
 		c = trajan.parse(buffer, tree);
 		
-		child = (Leaf)c.currentNode.getChildren()[0];
+		child = c.currentNode.getChildren()[0];
 		Assert.assertEquals(1, c.buffer.size());
-		Assert.assertEquals("Every", child.getType());
-		Assert.assertEquals("500 millisecond", child.getData());
+		Assert.assertEquals(EveryExpression.TYPE, child.getType());
+		Assert.assertEquals("500", (String)child.getData(Interpreter.PERIOD));
+		Assert.assertEquals("millisecond", (String)child.getData(Interpreter.PERIOD_UNIT));
 	}
 }

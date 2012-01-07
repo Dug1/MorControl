@@ -132,7 +132,7 @@ public class ReactorTest extends TestCase {
 		
 		public boolean isTriggered() {
 			if (markedForRemoval) {
-				tryRemove();
+				remove();
 				return false;
 			} 
 			markedForRemoval = true;
@@ -143,7 +143,7 @@ public class ReactorTest extends TestCase {
 			return new Config((long)0, false);
 		}
 		
-		public void tryRemove() {
+		public void remove() {
 			Reactor.Instance().getList().tryRemove(this);
 		}
 	}
@@ -155,6 +155,9 @@ public class ReactorTest extends TestCase {
 		public Object getConfig() {
 			return new Config((long)0, false);
 		} 
+		
+		public void remove() {
+		}
 	}
 	
 	public class PeriodicTriggerExample implements Trigger {
@@ -163,7 +166,7 @@ public class ReactorTest extends TestCase {
 		
 		public boolean isTriggered() {
 			if (markedForRemoval) {
-				tryRemove();
+				remove();
 				return false;
 			} 
 			markedForRemoval = true;
@@ -173,7 +176,7 @@ public class ReactorTest extends TestCase {
 			return new PeriodicConfig((long)0, (long)500, false);
 		}
 		
-		public void tryRemove() {
+		public void remove() {
 			Reactor.Instance().getList().tryRemove(this);
 		}
 	}
@@ -183,7 +186,7 @@ public class ReactorTest extends TestCase {
 		
 		public boolean isTriggered() {
 			if (markedForRemoval) {
-				tryRemove();
+				remove();
 				return false;
 			} 
 			markedForRemoval = true;
@@ -193,7 +196,7 @@ public class ReactorTest extends TestCase {
 			return new Config((long)0, true);
 		}
 		
-		public void tryRemove() {
+		public void remove() {
 			Reactor.Instance().getList().tryRemove(this);
 		}
 	}
@@ -203,7 +206,7 @@ public class ReactorTest extends TestCase {
 		
 		public boolean isTriggered() {
 			if (markedForRemoval) {
-				tryRemove();
+				remove();
 				return false;
 			} 
 			markedForRemoval = true;
@@ -213,8 +216,8 @@ public class ReactorTest extends TestCase {
 			return new PeriodicConfig((long)0, (long)500,true);
 		}
 		
-		public void tryRemove() {
+		public void remove() {
 			Reactor.Instance().getList().tryRemove(this);
 		}
 	}
-}	
+}		

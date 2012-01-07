@@ -2,9 +2,11 @@ package com.mortorq.bhrobotics.morlib;
 
 import java.util.Hashtable;
 import java.util.Enumeration;
+import edu.emory.mathcs.backport.java.util.concurrent.ScheduledFuture;
 
 public class TriggerRegistry implements Tickable{
 	private Hashtable relations;
+	private Hashtable handlerRegistry = new Hashtable();
 	
 	public TriggerRegistry() {
 		relations = new Hashtable();
@@ -15,6 +17,7 @@ public class TriggerRegistry implements Tickable{
 	}
 	
 	public void tryRemove(Trigger t) {
+		handlerRegistry.remove(relations.get(t));
 		relations.remove(t);
 	}
 	
@@ -34,13 +37,16 @@ public class TriggerRegistry implements Tickable{
 		return relations.elements();
 	}
 	
-	public void register(Trigger trigger, Handler[] handlers) {
+	public FutureReference register(Trigger trigger, Handler[] handlers) {
+		FutureReference tag = new FutureReference();
+		handlerRegistry.put(handlers, tag);
 		relations.put(trigger,handlers);
+		return tag;
 	}	
 	
-	public void register(Trigger trigger, Handler handler) {
+	public FutureReference register(Trigger trigger, Handler handler) {
 		Handler[] h = {handler};
-		register(trigger,h);
+		return register(trigger,h);
 	}
 	
 	public void start() {
@@ -55,9 +61,11 @@ public class TriggerRegistry implements Tickable{
 			Trigger current = (Trigger)e.nextElement();
 			if(current.isTriggered()) {
 				Handler[] handlers = (Handler[])relations.get(current);
+				ScheduledFuture[] futures = new ScheduledFuture[handlers.length];
 				for(int i=0; i<handlers.length; i++) {
-					Reactor.Instance().submit(handlers[i], current.getConfig());
+					futures[i] = Reactor.Instance().submit(handlers[i], current.getConfig());
 				}
+				((FutureReference)handlerRegistry.get(handlers)).setFutures(futures);
 			}
 		}
 	}

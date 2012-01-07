@@ -22,22 +22,22 @@ public class AndExpressionTest extends TestCase {
 
 	public void testParse() {
 		StringBuffer buffer = new StringBuffer("and");
-		Node seed = new Branch("Container");
+		Node seed = new Branch(ContainerExpression.TYPE);
 		
 		Context c = caligula.parse(buffer, seed);
 		
 		Assert.assertSame(c.currentNode, seed);
 		Assert.assertEquals(0, buffer.size());
-		Assert.assertEquals(c.currentNode.getType(), "And");
+		Assert.assertEquals(c.currentNode.getType(), AndExpression.TYPE);
 
 		
 		buffer = new StringBuffer("and silky yuletides");
-		seed = new Branch("Container");
+		seed = new Branch(ContainerExpression.TYPE);
 
 		c = caligula.parse(buffer, seed);
 
 		Assert.assertSame(c.currentNode, seed);
 		Assert.assertEquals("silky yuletides", buffer.readOne());
-		Assert.assertEquals(c.currentNode.getType(), "And");
+		Assert.assertEquals(c.currentNode.getType(), AndExpression.TYPE);
 	}
 }

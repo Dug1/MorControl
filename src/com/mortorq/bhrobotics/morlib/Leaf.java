@@ -1,17 +1,21 @@
 package com.mortorq.bhrobotics.morlib;
 
 import java.util.Vector;
+import java.util.Hashtable;
 
 public class Leaf implements Node {
 	private String type;
-	private String data;
+	private Hashtable data;
 	
-	public Leaf(String t, String d) {
+	public Leaf(String t) {
 		type =t;
-		data = d;
+		data = new Hashtable();
 	}
 	
 	public void addNode(Node child)  {
+	}
+	
+	public void removeNode(Node child)  {
 	}
 	
 	public Node[] getChildren() {
@@ -25,11 +29,19 @@ public class Leaf implements Node {
 	public String getType() {
 		return type;
 	}
-	public void setData(String d) {
-		data = d;
+	public Hashtable getData() {
+		return data;
 	}
 	
-	public String getData() {
-		return data;
+	public Object getData(String tag) {
+		return data.get(tag);
+	}
+	
+	public void removeData(String tag) {
+		data.remove(tag);
+	}
+
+	public void putData(String tag, Object newData) {
+		data.put(tag, newData);
 	}
 }

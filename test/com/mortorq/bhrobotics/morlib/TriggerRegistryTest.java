@@ -62,7 +62,7 @@ public class TriggerRegistryTest extends TestCase {
 		
 		public boolean isTriggered() {
 			if (markedForRemoval) {
-				tryRemove();
+				remove();
 				return false;
 			} 
 			markedForRemoval = true;
@@ -73,7 +73,7 @@ public class TriggerRegistryTest extends TestCase {
 			return new Config(0, false);
 		}
 		
-		public void tryRemove() {
+		public void remove() {
 			Reactor.Instance().getList().tryRemove(this);
 		}
 	}
@@ -84,6 +84,10 @@ public class TriggerRegistryTest extends TestCase {
 		}
 		public Object getConfig() {
 			return new Config(0, false);
+		}
+		
+		public void remove() {
+			//ignore
 		}
 	}
 }

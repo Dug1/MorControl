@@ -22,13 +22,13 @@ public class ContainerExpressionTest extends TestCase {
 
 	public void testParse() {
 		StringBuffer test = new StringBuffer("()");
-		Node seed = new Branch("Container");
+		Node seed = new Branch(ContainerExpression.TYPE);
 		
 		Context c = nero.parse(test, seed);
 		
 		Assert.assertNotSame(c.currentNode, seed);
 		Assert.assertEquals(1,c.buffer.size());
-		Assert.assertEquals(c.currentNode.getType(), "Container");
+		Assert.assertEquals(c.currentNode.getType(), ContainerExpression.TYPE);
 		
 		c = nero.parse(c.buffer, c.currentNode);
 		

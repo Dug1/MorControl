@@ -12,6 +12,7 @@ public class Reactor implements Tickable {
 	private int poolSize;
 	private ScheduledExecutorService threadPool;
 	private TriggerRegistry list;
+	private Interpreter interpreter;
 	
 	private Reactor(int pool) {
 		poolSize = pool;
@@ -24,35 +25,18 @@ public class Reactor implements Tickable {
 		return reactor;
 	}
 	
-	public TriggerRegistry getList() {
-		return list;
-	}
-	
-	public void start() {
-		threadPool = Executors.newScheduledThreadPool(poolSize);
-		list = new TriggerRegistry();
-	}
-	
-	public void stop() {
-		threadPool.shutdown();
-	}
-	
-	public void tick() {
-		list.tick();
-	} 
-	
 	private Runnable createRunnable(Handler h) {
-            class Task implements Runnable {
-                Handler handler;
-                Task(Handler h) {
-                    handler = h;
-                }
-                    
-                public void run() {
-                    handler.execute();
-                }
+        class Task implements Runnable {
+            Handler handler;
+            Task(Handler h) {
+                handler = h;
             }
-            return new Task(h);
+                    
+            public void run() {
+                handler.execute();
+            }
+        }
+        return new Task(h);
 	}
 	
 	private Callable createCallable(Handler h) {
@@ -68,7 +52,7 @@ public class Reactor implements Tickable {
             }
             return new Task(h);
 	}
-
+	
 	public ScheduledFuture schedule(Handler h, long delay) {
 		return threadPool.schedule(createRunnable(h),delay,TimeUnit.MILLISECONDS);
 	}
@@ -84,6 +68,28 @@ public class Reactor implements Tickable {
 	public ScheduledFuture scheduleCallable(Handler h, long delay) {
 		return threadPool.schedule(createCallable(h),delay,TimeUnit.MILLISECONDS);
 	}
+	
+	public TriggerRegistry getList() {
+		return list;
+	}	
+	
+	public Interpreter getInterpreter() {
+		return interpreter;
+	}
+	
+	public void start() {
+		threadPool = Executors.newScheduledThreadPool(poolSize);
+		list = new TriggerRegistry();
+		interpreter = new Interpreter();
+	}
+	
+	public void stop() {
+		threadPool.shutdown();
+	}
+	
+	public void tick() {
+		list.tick();
+	} 
 	
 	public ScheduledFuture submit(Handler h, Object o) {
 		if (o instanceof PeriodicConfig) {
@@ -104,11 +110,16 @@ public class Reactor implements Tickable {
 		return null;
 	}
 	
-	public void register(Trigger trigger, Handler[] handlers) {
-		list.register(trigger, handlers);
+	public FutureReference register(Trigger trigger, Handler[] handlers) {
+		return list.register(trigger, handlers);
 	}	
 	
-	public void register(Trigger trigger, Handler handler) {
-		list.register(trigger, handler);
+	public FutureReference register(Trigger trigger, Handler handler) {
+		return list.register(trigger, handler);
+	}
+	
+	public ScheduledFuture register(String interpretable, Handler handler) {
+		//Pending implementation
+		return null;
 	}
 }
