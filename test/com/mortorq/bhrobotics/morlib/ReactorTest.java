@@ -21,42 +21,6 @@ public class ReactorTest extends TestCase {
 		Assert.assertNotNull(Reactor.Instance().getList());
 	}
 	
-	public void testSchedule() {
-		HandlerExample bohr = new HandlerExample("Bohr","discover the mysteries of the atom"); 
-		Thread thread = Thread.currentThread();
-		
-		Reactor.Instance().schedule(bohr,(long)0);
-		try {
-			thread.sleep(1000);
-		} catch(InterruptedException e) {Assert.fail("Main thread was interrputed");}
-		
-		Assert.assertTrue(bohr.isCalled);
-	}
-	
-	public void testScheduleInterval() {
-		HandlerExample einstein = new HandlerExample("Einstein","unravel Newtonian physics");
-		
-		ScheduledFuture f = Reactor.Instance().scheduleInterval(einstein,(long)0,(long)500);
-		try {
-			Thread.sleep(4000);
-		} catch(InterruptedException e) {Assert.fail("Main thread was interrputed");}
-		f.cancel(false);
-		
-		Assert.assertTrue(einstein.timesCalled > 1);
-	}
-	
-	public void testScheduleCallable() {
-		HandlerExample schrödinger = new HandlerExample("Schrödinger","play with cats"); 
-		Thread thread = Thread.currentThread();
-		
-		ScheduledFuture f = Reactor.Instance().scheduleCallable(schrödinger,(long)0);
-		try {
-			thread.sleep(1000);
-		
-			Assert.assertSame(schrödinger.name,f.get());
-		} catch(Exception e) {Assert.fail("Main thread was interrputed");}
-	}
-	
 	public void testSubmit() {
 		HandlerExample oppenheimer = new HandlerExample("Oppenheimer","blow things up"); 
 		HandlerExample fermi = new HandlerExample("Fermi","create a reactor"); 

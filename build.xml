@@ -83,7 +83,7 @@
       
       <batchtest fork="yes" todir="${junit.reports.dir}">
         <fileset dir="${build.dir}">
-          <include name="**/*Test.class" />
+          <include name="**/MakeTriggerTest.class" />
         </fileset>
       </batchtest>
     </junit>

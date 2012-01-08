@@ -16,11 +16,20 @@ public class Reactor implements Tickable {
 	
 	private Reactor(int pool) {
 		poolSize = pool;
+		interpreter = new Interpreter();
+		interpreter.addPattern(new ContainerExpression());
+		interpreter.addPattern(new EveryExpression());
+		interpreter.addPattern(new OrExpression());
+		interpreter.addPattern(new AndExpression());
+		interpreter.addPattern(new OnceExpression()); 
+		interpreter.addPattern(new DelayExpression()); 
+		interpreter.addPattern(new TickExpression()); 
+		interpreter.addPattern(new UntilExpression());
 	}
 	
 	public static Reactor Instance() {
 		if(reactor == null) {
-			reactor = new Reactor(2);
+			reactor = new Reactor(5);
 		}
 		return reactor;
 	}
@@ -53,19 +62,19 @@ public class Reactor implements Tickable {
             return new Task(h);
 	}
 	
-	public ScheduledFuture schedule(Handler h, long delay) {
+	private ScheduledFuture schedule(Handler h, long delay) {
 		return threadPool.schedule(createRunnable(h),delay,TimeUnit.MILLISECONDS);
 	}
 	
-	public ScheduledFuture scheduleInterval(Handler h, long delay, long period) {
+	private ScheduledFuture scheduleInterval(Handler h, long delay, long period) {
 		return threadPool.scheduleAtFixedRate(createRunnable(h),delay,period,TimeUnit.MILLISECONDS);
 	}
 	
-	public ScheduledFuture scheduleAwaitedInterval(Handler h, long delay, long period) {
+	private ScheduledFuture scheduleAwaitedInterval(Handler h, long delay, long period) {
 		return threadPool.scheduleWithFixedDelay(createRunnable(h),delay,period,TimeUnit.MILLISECONDS);
 	}
 	
-	public ScheduledFuture scheduleCallable(Handler h, long delay) {
+	private ScheduledFuture scheduleCallable(Handler h, long delay) {
 		return threadPool.schedule(createCallable(h),delay,TimeUnit.MILLISECONDS);
 	}
 	
@@ -80,11 +89,11 @@ public class Reactor implements Tickable {
 	public void start() {
 		threadPool = Executors.newScheduledThreadPool(poolSize);
 		list = new TriggerRegistry();
-		interpreter = new Interpreter();
 	}
 	
 	public void stop() {
 		threadPool.shutdown();
+		list.clear();
 	}
 	
 	public void tick() {
@@ -118,8 +127,12 @@ public class Reactor implements Tickable {
 		return list.register(trigger, handler);
 	}
 	
-	public ScheduledFuture register(String interpretable, Handler handler) {
-		//Pending implementation
-		return null;
+	public FutureReference compile(String interpretable, Handler[] handlers) throws ParseException, TriggerException{ 
+		return interpreter.compile(interpretable, handlers);
+	}
+	
+	public FutureReference compile(String interpretable, Handler handler) throws ParseException, TriggerException{
+		Handler[] h = {handler};
+		return compile(interpretable, h);
 	}
 }

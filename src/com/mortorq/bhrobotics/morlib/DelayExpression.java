@@ -33,7 +33,7 @@ public class DelayExpression implements Expression {
 	public void clean() {
 	}
 	
-	public FutureReference makeTrigger(Node tree, Handler[] handlers) {
-		return null;
+	public FutureReference makeTrigger(Node tree, Handler[] handlers) throws TriggerException {
+		throw new TriggerException(tree);
 	}
 }

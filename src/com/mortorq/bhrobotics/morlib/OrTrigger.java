@@ -20,13 +20,13 @@ public class OrTrigger implements Trigger {
 	}
 	
 	public boolean isTriggered() {
-		boolean allDone = false;
+		boolean anyTriggered = false;
 		for(int i = 0; i < flags.length; i++) {
 			if(flags[i]) {
-				allDone = true;
+				anyTriggered = true;
 				flags[i] = false;
 			}
 		}
-		return allDone;
+		return anyTriggered;
 	}
 }

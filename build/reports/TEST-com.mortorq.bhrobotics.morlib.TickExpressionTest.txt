@@ -1,5 +1,0 @@
-Testsuite: com.mortorq.bhrobotics.morlib.TickExpressionTest
-Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.078 sec
-
-Testcase: testMatches took 0.062 sec
-Testcase: testParse took 0 sec

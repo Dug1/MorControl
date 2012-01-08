@@ -27,12 +27,12 @@ public class OnceExpression implements Expression {
 		return new Context(buffer, tree);
 	}
 	
-	public FutureReference makeTrigger(Node tree, Handler[] handlers) {
+	public FutureReference makeTrigger(Node tree, Handler[] handlers) throws TriggerException {
 		long delay = 0;
 		TimeUnit unit = TimeUnit.MILLISECONDS;
 		if (tree.getData().containsKey(Interpreter.DELAY)) {
 			delay = Long.parseLong((String)(tree.getData(Interpreter.DELAY)));
-			unit = TimeUnit.valueOf(((String)tree.getData(Interpreter.DELAY_UNIT)).trim());
+			unit = TimeUnit.valueOf((((String)tree.getData(Interpreter.DELAY_UNIT)).toUpperCase()+ "S").trim());
 		}
 		return Reactor.Instance().register(new OnceTrigger(delay, unit), handlers);
 	}

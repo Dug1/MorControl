@@ -35,7 +35,7 @@ public class ContainerExpression implements Expression {
 		nodeStack.removeAllElements();
 	}
 	
-	public FutureReference makeTrigger(Node tree, Handler[] handlers) {
+	public FutureReference makeTrigger(Node tree, Handler[] handlers) throws TriggerException {
 		return Reactor.Instance().getInterpreter().makeTrigger(tree.getChildren()[0], handlers);
 	}
 }

@@ -35,12 +35,12 @@ public class UntilExpression implements Expression {
 		return new Context(buffer, tree);
 	}
 	
-	public FutureReference makeTrigger(Node tree, Handler[] handlers) {
+	public FutureReference makeTrigger(Node tree, Handler[] handlers) throws TriggerException {
 		long delay = 0;
 		TimeUnit unit = TimeUnit.MILLISECONDS;
 		if (tree.getData().containsKey(Interpreter.UNTIL)) {
 			delay = Long.parseLong((String)(tree.getData(Interpreter.UNTIL)));
-			unit = TimeUnit.valueOf(((String)tree.getData(Interpreter.UNTIL_UNIT)).trim());
+			unit = TimeUnit.valueOf((((String)tree.getData(Interpreter.UNTIL_UNIT)).toUpperCase()+ "S").trim());
 		}
 		class CancelHandler implements Handler {
 			FutureReference target; 

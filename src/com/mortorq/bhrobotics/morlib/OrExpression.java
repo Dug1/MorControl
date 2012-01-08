@@ -26,12 +26,12 @@ public class OrExpression implements Expression {
 		return new Context(buffer, tree);
 	}
 	
-	public FutureReference makeTrigger(Node tree, Handler[] handlers) {
+	public FutureReference makeTrigger(Node tree, Handler[] handlers) throws TriggerException {
 		long delay = 0;
 		TimeUnit unit = TimeUnit.MILLISECONDS;
 		if (tree.getData().containsKey(Interpreter.DELAY)) {
 			delay = Long.parseLong((String)(tree.getData(Interpreter.DELAY)));
-			unit = TimeUnit.valueOf(((String)tree.getData(Interpreter.DELAY_UNIT)).trim());
+			unit = TimeUnit.valueOf((((String)tree.getData(Interpreter.DELAY_UNIT)).toUpperCase()+ "S").trim());
 		}
 		class AlertHandler implements Handler {
 			int index;
@@ -49,8 +49,8 @@ public class OrExpression implements Expression {
 		Node[] children  = tree.getChildren();
 		boolean[] flags = new boolean[children.length];
 		for(int i =0; i < children.length; i++) {
-			Handler[] alerts =  {new AlertHandler(i, flags)};
-			Reactor.Instance().getInterpreter().makeTrigger(children[i], alerts);
+			Handler[] alert =  {new AlertHandler(i, flags)};
+			Reactor.Instance().getInterpreter().makeTrigger(children[i], alert);
 		}
 		return Reactor.Instance().register(new OrTrigger(flags, delay, unit), handlers);
 	}

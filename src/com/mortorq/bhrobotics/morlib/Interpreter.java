@@ -31,39 +31,42 @@ public class Interpreter {
 		}
 	}
 	
+	public FutureReference compile(String arg, Handler[] handlers) throws ParseException, TriggerException {
+		cleanPatterns();
+		Context context = Reactor.Instance().getInterpreter().interpret(new Context(new StringBuffer(arg), new Branch(ContainerExpression.TYPE)));
+		return Reactor.Instance().getInterpreter().makeTrigger(context.currentNode, handlers);
+	}
+	
 	public void clear() {
 		patterns.removeAllElements();
 	}
 	
-	public Context interpret(Context context) {
+	protected Context interpret(Context context) throws ParseException {
 		StringBuffer buffer = context.buffer;
 		Node tree = context.currentNode;
-		
 		Enumeration e = patterns.elements();
 		while(e.hasMoreElements()) {
 			Expression pattern = (Expression)e.nextElement();
 			if (pattern.matches(buffer.readOne())) {
-				context = pattern.parse(buffer, tree);
-				break;
+				Context newContext = pattern.parse(buffer, tree);
+				if (context.buffer.hasMoreTokens()) {
+					return interpret(newContext);
+				}
+				return newContext;
 			}
 		}
-		
-		if (context.buffer.hasMoreTokens()) {
-			return interpret(context);
-		} else {
-			return context;
-		}
+		throw new ParseException(buffer.readOne());
 	}
 	
-	public FutureReference makeTrigger(Node tree, Handler[] handlers) {
+	protected FutureReference makeTrigger(Node tree, Handler[] handlers) throws TriggerException {
 		Enumeration e = patterns.elements();
 		while(e.hasMoreElements()) {
 			Expression pattern = (Expression)e.nextElement();
 			if (pattern.getType().equals(tree.getType())) {
+				System.out.println("Making " + pattern.getType() + "Trigger");
 				return (pattern).makeTrigger(tree, handlers);
 			}
 		}
-		//Should throw Exception
-		return null;
+		throw new TriggerException(tree); 
 	}
 }

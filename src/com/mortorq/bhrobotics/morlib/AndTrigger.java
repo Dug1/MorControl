@@ -20,13 +20,13 @@ public class AndTrigger implements Trigger {
 	}
 	
 	public boolean isTriggered() {
-		boolean allDone = true;
+		boolean allTriggered = true;
 		for(int i = 0; i < flags.length; i++) {
 			if(!flags[i]) {
-				allDone = false;
+				allTriggered = false;
 			}
 			flags[i] = false;
 		}
-		return allDone;
+		return allTriggered;
 	}
 }

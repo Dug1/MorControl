@@ -32,7 +32,7 @@ public class TickExpression implements Expression {
 		TimeUnit unit = TimeUnit.MILLISECONDS;
 		if (tree.getData().containsKey(Interpreter.DELAY)) {
 			delay = Long.parseLong((String)(tree.getData(Interpreter.DELAY)));
-			unit = TimeUnit.valueOf(((String)tree.getData(Interpreter.DELAY_UNIT)).trim());
+			unit = TimeUnit.valueOf((((String)tree.getData(Interpreter.DELAY_UNIT)).toUpperCase()+ "S").trim());
 		}
 		return Reactor.Instance().register(new TickTrigger(delay, unit), handlers);
 	}

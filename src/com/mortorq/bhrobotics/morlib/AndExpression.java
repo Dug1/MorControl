@@ -30,12 +30,12 @@ public class AndExpression implements Expression {
 	public void clean() {
 	}
 	
-	public FutureReference makeTrigger(Node tree, Handler[] handlers) {
+	public FutureReference makeTrigger(Node tree, Handler[] handlers) throws TriggerException {
 		long delay = 0;
 		TimeUnit unit = TimeUnit.MILLISECONDS;
 		if (tree.getData().containsKey(Interpreter.DELAY)) {
 			delay = Long.parseLong((String)(tree.getData(Interpreter.DELAY)));
-			unit = TimeUnit.valueOf(((String)tree.getData(Interpreter.DELAY_UNIT)).trim());
+			unit = TimeUnit.valueOf((((String)tree.getData(Interpreter.DELAY_UNIT)).toUpperCase()+ "S").trim());
 		}
 		class AlertHandler implements Handler {
 			int index;
