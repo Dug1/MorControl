@@ -1,61 +1,57 @@
 package com.mortorq.bhrobotics.morlib;
 
-import jregex.Pattern;
 import jregex.Matcher;
-import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
 
-public class AndExpression implements Expression {
-	private String matchRegex = "and";
-	public final static String TYPE = "And";
+public class AndExpression extends Expression {
 	
-	public String getType() {
-		return TYPE;
-	}	
-	
-	public boolean matches(String token) {
-		Pattern pattern = new Pattern(token); 
-		return pattern.matcher(matchRegex).matchesPrefix();
+	public AndExpression() {
+		super("and");
 	}
 
 	public Context parse(StringBuffer buffer, Node tree) {
-		Pattern pattern = new Pattern(matchRegex); 
-		Matcher matchMaker = pattern.matcher(buffer.readOne());
+		Matcher matchMaker = getMatcher(buffer.readOne());
 		
-		tree.setType(TYPE);
-		matchMaker.find();
 		buffer.replace((buffer.readOne().substring(matchMaker.end())).trim());
+		tree = new AndNode(tree);
+		
 		return new Context(buffer, tree);
 	}
 	
 	public void clean() {
 	}
 	
-	public FutureReference makeTrigger(Node tree, Handler[] handlers) throws TriggerException {
-		long delay = 0;
-		TimeUnit unit = TimeUnit.MILLISECONDS;
-		if (tree.getData().containsKey(Interpreter.DELAY)) {
-			delay = Long.parseLong((String)(tree.getData(Interpreter.DELAY)));
-			unit = TimeUnit.valueOf((((String)tree.getData(Interpreter.DELAY_UNIT)).toUpperCase()+ "S").trim());
+	public boolean matchesNode(Node node) {
+		return node instanceof AndNode;
+	}
+	
+	public static class AndNode extends Node {
+		private Node delagateNode;
+		
+		public AndNode(Node node) {
+			delagateNode = node;
 		}
-		class AlertHandler implements Handler {
-			int index;
-			boolean[] flags;
-			AlertHandler(int i, boolean[] f) {
-				index = i;
-				flags = f;
-			}
+		
+		public void addChild(Node e) {
+			delagateNode.addChild(e);
 			
-			public Object execute() {
-				flags[index] = true;
-				return null;
-			}
 		}
-		Node[] children  = tree.getChildren();
-		boolean[] flags = new boolean[children.length];
-		for(int i =0; i < children.length; i++) {
-			Handler[] alerts =  {new AlertHandler(i, flags)};
-			Reactor.Instance().getInterpreter().makeTrigger(children[i], alerts);
+
+		public void removeChild(Node e) {
+			delagateNode.removeChild(e);
+			
 		}
-		return Reactor.Instance().register(new AndTrigger(flags, delay, unit), handlers);
+
+		public Node[] getChildren() {
+			return delagateNode.getChildren();
+		}
+		
+		public Deployer register(Handler[] handlers) {
+			Node[] children = getChildren();
+			AndDeployer andDeployer = new AndDeployer(handlers, children);
+	
+			Reactor.getInstance().addDeployer(andDeployer);
+			
+			return andDeployer;
+		}
 	}
 }

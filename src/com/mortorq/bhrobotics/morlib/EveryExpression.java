@@ -1,50 +1,47 @@
 package com.mortorq.bhrobotics.morlib;
 
 import jregex.Matcher;
-import jregex.Pattern;
-import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
 
-public class EveryExpression implements Expression{
-	private String matchRegex = "every ([0-9]+) (millisecond|second)[s]{0,1}";
-	public final static String TYPE = "Every";
-	Pattern pattern = new Pattern(matchRegex);
+public class EveryExpression extends Expression {
 	
-	public String getType() {
-		return TYPE;
-	}	
-	
-	public boolean matches(String token) {
-		Matcher matchMaker = pattern.matcher(token);
-		return (matchMaker.find()) && (matchMaker.start() == 0);
+	public EveryExpression() {
+		super("every ([0-9]+) (millisecond|second)[s]{0,1}");
 	}
 
 	public Context parse(StringBuffer buffer, Node tree) {
-		Matcher matchMaker = pattern.matcher(buffer.readOne());
-		matchMaker.find();
-		buffer.replace((buffer.readOne().substring(matchMaker.end())).trim());
-		Leaf everyLeaf = new Leaf(TYPE);
-		everyLeaf.putData(Interpreter.PERIOD, matchMaker.group(1).trim());
-		everyLeaf.putData(Interpreter.PERIOD_UNIT, matchMaker.group(2).trim());
-		tree.addNode(everyLeaf);
+		Matcher matchMaker = getMatcher(buffer.readOne());
+		int end = matchMaker.end();
+
+		String newToken = buffer.readOne().substring(end); 
+		buffer.replace(newToken);
+		
+		Node everNode = new EveryNode();
+		everNode.putData(Interpreter.PERIOD, matchMaker.group(0));
+		everNode.putData(Interpreter.PERIOD_UNIT, matchMaker.group(1).toUpperCase() + "S");
+		tree.addChild(new EveryNode());
+		
 		return new Context(buffer, tree);
 	}
 	
-	public FutureReference makeTrigger(Node tree, Handler[] handlers) throws TriggerException {
-		long delay = 0;
-		TimeUnit unit = TimeUnit.MILLISECONDS;
-		if (tree.getData().containsKey(Interpreter.DELAY)) {
-			delay = Long.parseLong((String)(tree.getData(Interpreter.DELAY)));
-			unit = TimeUnit.valueOf((((String)tree.getData(Interpreter.DELAY_UNIT)).toUpperCase()+ "S").trim());
-		}
-		long period = 1;
-		TimeUnit periodUnit = TimeUnit.MILLISECONDS;
-		if (tree.getData().containsKey(Interpreter.PERIOD)) {
-			period = Long.parseLong((String)(tree.getData(Interpreter.PERIOD)));
-			periodUnit = TimeUnit.valueOf((((String)tree.getData(Interpreter.PERIOD_UNIT)).toUpperCase()+ "S").trim());
-		}
-		return Reactor.Instance().register(new EveryTrigger(delay, unit, period, periodUnit), handlers);
+	public void clean() {
 	}
 	
-	public void clean() {
+	public boolean matchesNode(Node node) {
+		return(node instanceof EveryNode);
+	}
+	
+	public static class EveryNode extends Leaf {
+		
+		public Deployer register(Handler[] handlers) {
+			String timeUnit = getData(Interpreter.PERIOD_UNIT);
+			long period = Long.parseLong(getData(Interpreter.PERIOD)); 
+			if(timeUnit.equalsIgnoreCase("SECONDS")) {
+				period *= 1000;
+			}
+			
+			Deployer deployer = new EveryDeployer(period, handlers);
+			Reactor.getInstance().addDeployer(deployer);
+			return deployer;
+		}
 	}
 }

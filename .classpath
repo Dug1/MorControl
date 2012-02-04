@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="lib" path="lib/backport-util-concurrent.jar"/>
+	<classpathentry kind="lib" path="lib/java-ext.jar"/>
+	<classpathentry kind="lib" path="lib/java.jar"/>
+	<classpathentry kind="lib" path="lib/jregex1.2_01.jar"/>
+	<classpathentry kind="lib" path="lib/junit-4.10.jar"/>
+	<classpathentry kind="lib" path="lib/mockito-all-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/Daguan Lu/sunspotfrcsdk/lib/WPILibJ/classes.jar"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/Daguan Lu/sunspotfrcsdk/lib/squawk_device.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/Daguan Lu/sunspotfrcsdk/lib/WPILibJ/src/edu/wpi/first/wpilibj"/>
+	<classpathentry kind="output" path="build"/>
+</classpath>

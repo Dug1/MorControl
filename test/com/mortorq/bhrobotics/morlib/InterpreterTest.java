@@ -49,9 +49,14 @@ public class InterpreterTest extends TestCase {
 		interpreter.addPattern(LouisXIV);
 		interpreter.addPattern(NapoleonIII);
 		
-		Context context = interpreter.interpret(new Context(new StringBuffer("(test)"), new Branch("Container")));
+		Context context = new Context(new StringBuffer(""), new Branch());
+		try {
+			interpreter.interpret(new Context(new StringBuffer("(test)"), new Branch()));
+		} catch (ParseException e) {
+			System.out.println(e.getMessage());
+		}
 		
-		Assert.assertFalse(context.buffer.hasMoreTokens());
+		Assert.assertFalse(context.getBuffer().hasMoreTokens());
 		Assert.assertTrue(HenryIV.hasBeenCalled);
 		Assert.assertTrue(LouisXIV.hasBeenCalled);
 		Assert.assertTrue(NapoleonIII.hasBeenCalled);
@@ -59,8 +64,12 @@ public class InterpreterTest extends TestCase {
 		System.out.println("------------------------------------------------------------");
 	}
 	
-	public class TestLeftExpression implements Expression {
+	public class TestLeftExpression extends Expression {
 		public boolean hasBeenCalled = false;
+		
+		public TestLeftExpression() {
+			super("[(]");
+		}
 		
 		public String getType() {
 			return "Test";
@@ -80,13 +89,17 @@ public class InterpreterTest extends TestCase {
 		
 		public void clean()	{ 
 		}
-		
-		public Trigger makeTrigger(Node tree) {
-			return null;
+
+		public boolean matchesNode(Node node) {
+			return false;
 		}
 	}		
 	
-	public class TestRightExpression implements Expression {
+	public class TestRightExpression extends Expression {
+		protected TestRightExpression() {
+			super("[)]");
+		}
+
 		public boolean hasBeenCalled = false;
 		
 		public String getType() {
@@ -107,13 +120,17 @@ public class InterpreterTest extends TestCase {
 		
 		public void clean()	{ 
 		}
-		
-		public Trigger makeTrigger(Node tree) {
-			return null;
+
+		public boolean matchesNode(Node node) {
+			return false;
 		}
 	}
 	
-	public class TestExpression implements Expression {
+	public class TestExpression extends Expression {
+		protected TestExpression() {
+			super("test");
+		}
+
 		public boolean hasBeenCalled = false;
 		
 		public String getType() {
@@ -134,9 +151,9 @@ public class InterpreterTest extends TestCase {
 		
 		public void clean()	{ 
 		}
-		
-		public Trigger makeTrigger(Node tree) {
-			return null;
+
+		public boolean matchesNode(Node node) {
+			return false;
 		}
 	}	
 }

@@ -1,39 +1,50 @@
 package com.mortorq.bhrobotics.morlib;
 
 import jregex.Matcher;
-import jregex.Pattern;
 
-public class DelayExpression implements Expression {
-	private String matchRegex = "with delay of ([0-9]+) (second|millisecond)[s]{0,1}";
-	public final static String TYPE = "Delay";
-	private Pattern pattern = new Pattern(matchRegex);
+public class DelayExpression extends Expression {
 	
-	public String getType() {
-		return TYPE;
-	}	
-	
-	public boolean matches(String token) {
-		Matcher matchMaker = pattern.matcher(token);
-		return (matchMaker.find() && (matchMaker.start() == 0));
- 	}
+	public DelayExpression() {
+		super("with delay of ([0-9]+) (second|millisecond)[s]{0,1}");
+	}
 	
 	public Context parse(StringBuffer buffer, Node tree) {
 		Node[] children = tree.getChildren();
-		Matcher matchMaker = pattern.matcher(buffer.readOne());
+		Matcher matchMaker = getMatcher(buffer.readOne());
 		
-		matchMaker.find();
 		buffer.replace(buffer.readOne().substring(matchMaker.end()).trim());
-		Node delayNode = children[children.length-1];
+		Node delayNode = new DelayNode();
+		Node delayedNode = children[children.length-1];
 		delayNode.putData(Interpreter.DELAY, matchMaker.group(1));
-		delayNode.putData(Interpreter.DELAY_UNIT, matchMaker.group(2));
+		delayNode.putData(Interpreter.DELAY_UNIT, matchMaker.group(1).toUpperCase() + "S");
+		delayNode.addChild(delayedNode);
+		tree.removeChild(delayedNode);
+		tree.addChild(delayNode);
 		
 		return new Context(buffer, tree);
 	}
 	
 	public void clean() {
 	}
-	
-	public FutureReference makeTrigger(Node tree, Handler[] handlers) throws TriggerException {
-		throw new TriggerException(tree);
+
+	public boolean matchesNode(Node node) {
+		return node instanceof DelayNode;
+	}
+
+	public static class DelayNode extends Branch {
+
+		public Deployer register(Handler[] handlers) {
+			Node childNode = getChildren()[0];
+			String timeUnit = getData(Interpreter.DELAY_UNIT);
+			long period = Long.parseLong(getData(Interpreter.DELAY)); 
+			if(timeUnit.equalsIgnoreCase("SECONDS")) {
+				period *= 1000;
+			}
+			
+			Deployer delayFilter = new DelayDeployer(handlers, childNode, period);
+			Reactor.getInstance().addDeployer(delayFilter);
+
+			return delayFilter;
+		}	
 	}
 }

@@ -20,25 +20,50 @@ public class EveryExpressionTest extends TestCase {
 	
 	public void testParse() {
 		StringBuffer buffer = new StringBuffer("every 1 second");
-		Branch tree = new Branch(ContainerExpression.TYPE);
+		Branch tree = new Branch();
 		
 		Context c = trajan.parse(buffer, tree);
 		
-		Node child = c.currentNode.getChildren()[0];
-		Assert.assertEquals(0, c.buffer.size());
-		Assert.assertEquals(EveryExpression.TYPE, child.getType());
-		Assert.assertEquals("1", (String)child.getData(Interpreter.PERIOD));
-		Assert.assertEquals("second", (String)child.getData(Interpreter.PERIOD_UNIT));
-		
+		Node child = c.getCurrentNode().getChildren()[0];
+		Assert.assertEquals(0, c.getBuffer().size());
+		Assert.assertTrue(trajan.matchesNode(child));
+
 		buffer = new StringBuffer("every 500 milliseconds and button 5 pressed");
-		tree = new Branch(ContainerExpression.TYPE);
+		tree = new Branch();
 		
 		c = trajan.parse(buffer, tree);
 		
-		child = c.currentNode.getChildren()[0];
-		Assert.assertEquals(1, c.buffer.size());
-		Assert.assertEquals(EveryExpression.TYPE, child.getType());
-		Assert.assertEquals("500", (String)child.getData(Interpreter.PERIOD));
-		Assert.assertEquals("millisecond", (String)child.getData(Interpreter.PERIOD_UNIT));
+		child = c.getCurrentNode().getChildren()[0];
+		Assert.assertEquals(1, c.getBuffer().size());
+		Assert.assertTrue(trajan.matchesNode(child));
+	}
+	
+	public void testEveryNode() {
+		Reactor.getInstance().start();
+		EveryExpression.EveryNode node = new EveryExpression.EveryNode();
+		node.putData(Interpreter.PERIOD, "1");
+		node.putData(Interpreter.PERIOD_UNIT, "SECONDS");
+		class TestHandler implements Handler {
+			boolean isCalled = false;
+			int timesCalled = 0;
+			
+			public void execute(Event event){
+				System.out.println("Every Test");
+				isCalled = true;
+				timesCalled ++;
+			}
+		}
+		TestHandler handler = new TestHandler();
+		Handler[] handlers = {handler};
+		
+		node.register(handlers);
+		long start = System.currentTimeMillis();
+		while(System.currentTimeMillis() < start+5000) {
+			Reactor.getInstance().tick();
+		}
+		
+		assertTrue(handler.isCalled);
+		assertTrue(handler.timesCalled >= 3);
+		assertTrue(handler.timesCalled <= 5);
 	}
 }

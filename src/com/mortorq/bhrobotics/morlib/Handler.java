@@ -1,5 +1,5 @@
 package com.mortorq.bhrobotics.morlib;
 
 public interface Handler {
-	public Object execute();
+	public void execute(Event event);
 }

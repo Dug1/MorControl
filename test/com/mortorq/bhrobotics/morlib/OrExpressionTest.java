@@ -22,22 +22,24 @@ public class OrExpressionTest extends TestCase {
 
 	public void testParse() {
 		StringBuffer buffer = new StringBuffer("or");
-		Node seed = new Branch(ContainerExpression.TYPE);
+		Node seed = new Branch();
 		
 		Context c = augustus.parse(buffer, seed);
 		
-		Assert.assertSame(c.currentNode, seed);
+		Assert.assertNotSame(c.getCurrentNode(), seed);
 		Assert.assertEquals(0, buffer.size());
-		Assert.assertEquals(c.currentNode.getType(), OrExpression.TYPE);
+		Assert.assertTrue(c.getCurrentNode() instanceof OrExpression.OrNode);
 
 		
 		buffer = new StringBuffer("or silky yuletides");
-		seed = new Branch(ContainerExpression.TYPE);
+		Leaf leaf = new Leaf();
+		seed = new Branch();
+		seed.addChild(leaf);
 
 		c = augustus.parse(buffer, seed);
 		
-		Assert.assertSame(c.currentNode, seed);
+		Assert.assertSame(c.getCurrentNode().getChildren()[0], leaf);
 		Assert.assertEquals("silky yuletides", buffer.readOne());
-		Assert.assertEquals(c.currentNode.getType(), OrExpression.TYPE);
+		Assert.assertTrue(c.getCurrentNode() instanceof OrExpression.OrNode) ;
 	}
 }

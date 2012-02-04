@@ -19,21 +19,52 @@ public class TickExpressionTest extends TestCase {
 	
 	public void testParse() {
 		StringBuffer buffer = new StringBuffer("every tick");
-		Branch tree = new Branch(ContainerExpression.TYPE);
+		Branch node = new Branch();
+		Leaf leaf = new Leaf();
+			
+		Context c = diocletian.parse(buffer, node);
 		
-		Context c = diocletian.parse(buffer, tree);
+		Node child = c.getCurrentNode().getChildren()[0];
+		Assert.assertEquals(0, c.getBuffer().size());
+		Assert.assertTrue(diocletian.matchesNode(child));
+		Assert.assertFalse(diocletian.matchesNode(leaf));
+	}
+	
+	public void testNodeMatches() {
+		Node tickNode = new TickExpression.TickNode();
+		Node leaf = new Leaf();
+		assertTrue(diocletian.matchesNode(tickNode));
+		assertFalse(diocletian.matchesNode(leaf));
+	}
+	
+	public void testTickNode() {
+		Reactor.getInstance().start();
+		class TestHandler implements Handler {
+			boolean isCalled = false;
+			int timesCalled = 0;
+			
+			public void execute(Event event) {
+				System.out.println("RaR");
+				isCalled = true;
+				timesCalled++;
+			}
+		}
+		TickExpression.TickNode node = new TickExpression.TickNode();
+		TestHandler handler = new TestHandler();
+		Handler[] handlers = {handler};
+		node.register(handlers);
 		
-		Leaf child = (Leaf)c.currentNode.getChildren()[0];
-		Assert.assertEquals(0, c.buffer.size());
-		Assert.assertEquals(TickExpression.TYPE, child.getType());
+		Reactor.getInstance().tick();
+		Reactor.getInstance().tick();
+		Reactor.getInstance().tick();
+		Reactor.getInstance().tick();
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			fail(e.getMessage());
+		}
 		
-		buffer = new StringBuffer("every tick and button 5 pressed");
-		tree = new Branch(ContainerExpression.TYPE);
-		
-		c = diocletian.parse(buffer, tree);
-		
-		child = (Leaf)c.currentNode.getChildren()[0];
-		Assert.assertEquals(1, c.buffer.size());
-		Assert.assertEquals(TickExpression.TYPE, child.getType());
+		assertTrue(handler.isCalled);
+		assertEquals(4, handler.timesCalled);
 	}
 }

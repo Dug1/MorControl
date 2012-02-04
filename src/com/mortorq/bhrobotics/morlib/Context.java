@@ -1,11 +1,27 @@
 package com.mortorq.bhrobotics.morlib;
 
 public class Context {
-	public StringBuffer buffer;
-	public Node currentNode;
+	private StringBuffer buffer;
+	private Node currentNode;
 	
 	public Context(StringBuffer b, Node n) {
-		buffer = b;
-		currentNode = n;
+		setBuffer(b);
+		setCurrentNode(n);
+	}
+
+	public StringBuffer getBuffer() {
+		return buffer;
+	}
+
+	public void setBuffer(StringBuffer buffer) {
+		this.buffer = buffer;
+	}
+
+	public Node getCurrentNode() {
+		return currentNode;
+	}
+
+	public void setCurrentNode(Node currentNode) {
+		this.currentNode = currentNode;
 	}
 }

@@ -1,8 +1,9 @@
 package com.mortorq.bhrobotics.morlib;
 
-import com.sun.squawk.util.StringTokenizer;
 import java.util.Enumeration;
 import java.util.Vector;
+
+import com.sun.squawk.util.StringTokenizer;
 
 public class StringBuffer {
 	private Vector tokens = new Vector();

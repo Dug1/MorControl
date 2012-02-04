@@ -1,187 +1,82 @@
 package com.mortorq.bhrobotics.morlib;
 
 import junit.framework.*;
-import edu.emory.mathcs.backport.java.util.concurrent.ScheduledFuture;
-import java.util.Enumeration;
 
 public class ReactorTest extends TestCase {
-		
+	private final String TYPE = "ReactorTest";
+	private final String INFO = "Random Stuff";
+	
 	protected void setUp() throws Exception {
 		super.setUp();
-		Reactor.Instance().start();
+		Reactor.getInstance().start();
 	}
 	
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		Reactor.Instance().stop();
+		Reactor.getInstance().stop();
 	}
 	
 	public void testInit() {
-		Assert.assertNotNull(Reactor.Instance());
-		Assert.assertNotNull(Reactor.Instance().getList());
-	}
-	
-	public void testSubmit() {
-		HandlerExample oppenheimer = new HandlerExample("Oppenheimer","blow things up"); 
-		HandlerExample fermi = new HandlerExample("Fermi","create a reactor"); 
-		HandlerExample curie = new HandlerExample("Curie","make thing glow"); 
-		HandlerExample heisenberg = new HandlerExample("Heisenberg","muddle with matrices"); 
-		CallableTriggerExample calltrigger = new CallableTriggerExample();
-		PeriodicTriggerExample periodtrigger = new PeriodicTriggerExample();
-		AwaitedTriggerExample awaitedtrigger = new AwaitedTriggerExample();
-		NonTermTriggerExample trigger = new NonTermTriggerExample();
-		Thread thread = Thread.currentThread();
-		
-		Reactor.Instance().submit(heisenberg,trigger.getConfig());
-		ScheduledFuture f = Reactor.Instance().submit(curie,calltrigger.getConfig());
-		ScheduledFuture p = Reactor.Instance().submit(fermi,periodtrigger.getConfig());
-		ScheduledFuture a = Reactor.Instance().submit(oppenheimer,awaitedtrigger.getConfig());
-		
-		try {
-			thread.sleep(4000);
-		} catch(InterruptedException e) {Assert.fail("Main thread was interrputed");}
-		p.cancel(false);
-		a.cancel(false);
-		
-		try {
-			Assert.assertTrue(heisenberg.isCalled);
-			Assert.assertSame(curie.name, f.get());
-			Assert.assertTrue(fermi.timesCalled >= 2);
-			Assert.assertTrue(oppenheimer.timesCalled >= 2);
-		} catch (Exception e) {Assert.fail("Execution was interrupted");}
+		Assert.assertNotNull(Reactor.getInstance());
 	}
 	
 	public void testProcess() { 
-		HandlerExample feynman = new HandlerExample("Feynam", "draw diagrams");
-		HandlerExample gellmann = new HandlerExample("Gell-Mann", "name new flavors");
-		Thread thread = Thread.currentThread();
+		String[] reqs = {INFO};
+		HandlerExample handler = new HandlerExample();
+		Event firstEvent = new EventBuilder(TYPE).with(INFO, "Schrodinger is pondering about a cat").build();
+		Event secondEvent = new EventBuilder(TYPE).with(INFO, "Heinsburg is messing with matricies").build();
+		GenericDeployer filter = new GenericDeployer(TYPE, reqs,handler);
+		Reactor.getInstance().addDeployer(filter);
 		
-		Reactor.Instance().register(new NonTermTriggerExample(), feynman);
-		Reactor.Instance().register(new TriggerExample(), gellmann);
-		
-		Assert.assertEquals(2,Reactor.Instance().getList().getSize());
-		
-		Reactor.Instance().tick();
-		Reactor.Instance().tick();
+		Reactor.getInstance().addEvent(firstEvent);
+		Reactor.getInstance().addEvent(secondEvent);
+		Reactor.getInstance().tick();
+		Reactor.getInstance().tick();
 		try {
-			thread.sleep(1000);
-		} catch(InterruptedException e) {Assert.fail("Main thread was interrputed");}
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			fail(e.getMessage());
+		}
 		
-		Assert.assertTrue(gellmann.isCalled);
-		Assert.assertTrue(feynman.isCalled);
-		Assert.assertEquals(1,Reactor.Instance().getList().getSize());
+		assertTrue(handler.isCalled);
+		assertEquals(2, handler.timesCalled);
 	}
 	
-	public class HandlerExample implements Handler{	
+	public void testEmitterReg() {
+		final String key = "RAR";
+		class TestEmitter extends Emitter {
+			public void tick() {
+				Event event = new EventBuilder(key).build();
+				emit(event);
+			}
+		}
+	
+		Emitter emitter = new TestEmitter();
+		HandlerExample handler = new HandlerExample();
+		Deployer deployer = new GenericDeployer(key, handler);
+		emitter.start();
+		Reactor.getInstance().addDeployer(deployer);
+		
+		long start = System.currentTimeMillis();
+		while(System.currentTimeMillis() < start + 1000) {
+			Reactor.getInstance().tick();
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				fail(e.getMessage());
+			}
+		}
+
+		assertTrue(handler.isCalled);
+	}
+	
+	public class HandlerExample implements Handler {	
 		public boolean isCalled = false; 
 		public int timesCalled = 0;
-		public String name;
-		public String action;
 		
-		public HandlerExample(String n , String a) {
-			name = n;
-			action = a;
-		}
-		
-		public Object execute() {
-			System.out.println(name + " has been called to " + action + "!");
+		public void execute(Event event) {
 			isCalled = true;
 			timesCalled++;
-			return name;
-		}
-	}
-	
-	public class TriggerExample implements Trigger {
-		public boolean markedForRemoval = false;
-		
-		public boolean isTriggered() {
-			if (markedForRemoval) {
-				remove();
-				return false;
-			} 
-			markedForRemoval = true;
-			return true;
-		}
-		
-		public Object getConfig() {
-			return new Config((long)0, false);
-		}
-		
-		public void remove() {
-			Reactor.Instance().getList().tryRemove(this);
-		}
-	}
-	
-	public class NonTermTriggerExample implements Trigger {
-		public boolean isTriggered() {
-			return true;
-		}
-		public Object getConfig() {
-			return new Config((long)0, false);
-		} 
-		
-		public void remove() {
-		}
-	}
-	
-	public class PeriodicTriggerExample implements Trigger {
-		public int times = 0;
-		public boolean markedForRemoval = false;
-		
-		public boolean isTriggered() {
-			if (markedForRemoval) {
-				remove();
-				return false;
-			} 
-			markedForRemoval = true;
-			return true;
-		}
-		public Object getConfig() {
-			return new PeriodicConfig((long)0, (long)500, false);
-		}
-		
-		public void remove() {
-			Reactor.Instance().getList().tryRemove(this);
-		}
-	}
-	
-	public class CallableTriggerExample implements Trigger {
-		public boolean markedForRemoval = false;
-		
-		public boolean isTriggered() {
-			if (markedForRemoval) {
-				remove();
-				return false;
-			} 
-			markedForRemoval = true;
-			return true;
-		}
-		public Object getConfig() {
-			return new Config((long)0, true);
-		}
-		
-		public void remove() {
-			Reactor.Instance().getList().tryRemove(this);
-		}
-	}
-	
-	public class AwaitedTriggerExample implements Trigger {
-		public boolean markedForRemoval = false;
-		
-		public boolean isTriggered() {
-			if (markedForRemoval) {
-				remove();
-				return false;
-			} 
-			markedForRemoval = true;
-			return true;
-		}
-		public Object getConfig() {
-			return new PeriodicConfig((long)0, (long)500,true);
-		}
-		
-		public void remove() {
-			Reactor.Instance().getList().tryRemove(this);
 		}
 	}
 }		

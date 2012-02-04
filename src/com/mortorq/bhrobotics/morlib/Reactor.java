@@ -1,138 +1,138 @@
 package com.mortorq.bhrobotics.morlib;
 
-import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
-import edu.emory.mathcs.backport.java.util.concurrent.Callable;
+import java.util.Enumeration;
+import java.util.Vector;
+
 import edu.emory.mathcs.backport.java.util.concurrent.Executors;
-import edu.emory.mathcs.backport.java.util.concurrent.ScheduledFuture;
 import edu.emory.mathcs.backport.java.util.concurrent.ScheduledExecutorService;
+import edu.emory.mathcs.backport.java.util.concurrent.ScheduledFuture;
+import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
 
-
-public class Reactor implements Tickable {
+public class Reactor implements Tickable { 
+	//Reactor Singleton
 	private static Reactor reactor = null;
-	private int poolSize;
+	private int poolSize = 5;
+	
+	//Inner pools
 	private ScheduledExecutorService threadPool;
-	private TriggerRegistry list;
-	private Interpreter interpreter;
+	private Vector tickables;
+	private EventQueue eventQueue;
+	private DeployerRegistry deployerRegistry;
+	private Interpreter interpreter = new Interpreter();
 	
-	private Reactor(int pool) {
-		poolSize = pool;
-		interpreter = new Interpreter();
-		interpreter.addPattern(new ContainerExpression());
-		interpreter.addPattern(new EveryExpression());
-		interpreter.addPattern(new OrExpression());
-		interpreter.addPattern(new AndExpression());
-		interpreter.addPattern(new OnceExpression()); 
-		interpreter.addPattern(new DelayExpression()); 
-		interpreter.addPattern(new TickExpression()); 
-		interpreter.addPattern(new UntilExpression());
-	}
-	
-	public static Reactor Instance() {
+	public static Reactor getInstance() {
 		if(reactor == null) {
-			reactor = new Reactor(5);
+			reactor = new Reactor();
 		}
 		return reactor;
 	}
 	
-	private Runnable createRunnable(Handler h) {
+	private Reactor() {
+	}
+
+	private Runnable createRunnable(Handler h, Event e) {
         class Task implements Runnable {
             Handler handler;
-            Task(Handler h) {
-                handler = h;
+            Event event;
+
+            Task(Handler h, Event e) {
+            	handler = h;
+                event = e;
             }
                     
             public void run() {
-                handler.execute();
+                handler.execute(event);
             }
         }
-        return new Task(h);
+        return new Task(h, e);
 	}
 	
-	private Callable createCallable(Handler h) {
-            class Task implements Callable {
-                Handler handler;
-                Task(Handler h) {
-                    handler = h;
-                }
-                
-                public Object call() {
-                    return handler.execute();
-                }
-            }
-            return new Task(h);
+	private ScheduledFuture schedule(Handler h, Event e, long delay) {
+		return threadPool.schedule(createRunnable(h,e),delay,TimeUnit.MILLISECONDS);
+	}
+
+	private void fireEvent(Event event, Vector handlers) {
+		Enumeration e = handlers.elements();
+		while(e.hasMoreElements()) {
+			Handler handler = (Handler)e.nextElement();
+			schedule(handler, event, (long)0);
+		}
 	}
 	
-	private ScheduledFuture schedule(Handler h, long delay) {
-		return threadPool.schedule(createRunnable(h),delay,TimeUnit.MILLISECONDS);
+	private void checkEvents() {
+		Enumeration e = eventQueue.getEnumeration();
+		while(e.hasMoreElements()) {
+			Event event = (Event)e.nextElement();
+			Enumeration f = deployerRegistry.getElements();
+			while(f.hasMoreElements()) {
+				Deployer deployer = (Deployer)f.nextElement();
+				if(deployer.matches(event)) {
+					fireEvent(event, deployer.getHandlers());
+				}
+			}
+		}
+		eventQueue.flush();
 	}
-	
-	private ScheduledFuture scheduleInterval(Handler h, long delay, long period) {
-		return threadPool.scheduleAtFixedRate(createRunnable(h),delay,period,TimeUnit.MILLISECONDS);
-	}
-	
-	private ScheduledFuture scheduleAwaitedInterval(Handler h, long delay, long period) {
-		return threadPool.scheduleWithFixedDelay(createRunnable(h),delay,period,TimeUnit.MILLISECONDS);
-	}
-	
-	private ScheduledFuture scheduleCallable(Handler h, long delay) {
-		return threadPool.schedule(createCallable(h),delay,TimeUnit.MILLISECONDS);
-	}
-	
-	public TriggerRegistry getList() {
-		return list;
-	}	
 	
 	public Interpreter getInterpreter() {
 		return interpreter;
 	}
 	
+	public EventQueue getQueue() {
+		return eventQueue;
+	}
+	
+	public DeployerRegistry getRegistry() {
+		return deployerRegistry;
+	}
+	
+	public void addPattern(Expression e) {
+		interpreter.addPattern(e);
+	}
+	
+	public void removePattern(Expression e) {
+		interpreter.removePattern(e);
+	}
+	
+	public void addEvent(Event event) {
+		eventQueue.addEvent(event);
+	}
+	
+	public void addDeployer(Deployer deployer) {
+		deployerRegistry.add(deployer);
+	}
+	
+	public void removeDeployer(Deployer deployer) {
+		deployerRegistry.remove(deployer);
+	}
+	
+	public void addTickable(Tickable tickable) {
+		tickables.addElement(tickable);
+	}
+	
+	public void removeTickable(Tickable tickable) {
+		tickables.removeElement(tickable);
+	}
+	
 	public void start() {
 		threadPool = Executors.newScheduledThreadPool(poolSize);
-		list = new TriggerRegistry();
+		tickables = new Vector();
+		eventQueue = new EventQueue();
+		deployerRegistry = new DeployerRegistry();
 	}
 	
 	public void stop() {
 		threadPool.shutdown();
-		list.clear();
+		eventQueue.clear();
+		tickables.removeAllElements();
 	}
 	
 	public void tick() {
-		list.tick();
-	} 
-	
-	public ScheduledFuture submit(Handler h, Object o) {
-		if (o instanceof PeriodicConfig) {
-			PeriodicConfig p = (PeriodicConfig) o;
-			if (p.awaitsPrevious()) {
-				return scheduleAwaitedInterval(h, p.getDelay(), p.getPeriod());
-			} else {
-				return scheduleInterval(h, p.getDelay(), p.getPeriod());
-			}
-		} else if(o instanceof Config) {
-			Config c = (Config)o; 
-			if (c.isCallable()) {
-				return scheduleCallable(h, c.getDelay());
-			} else {
-				return schedule(h, c.getDelay());
-			}
-		}	
-		return null;
-	}
-	
-	public FutureReference register(Trigger trigger, Handler[] handlers) {
-		return list.register(trigger, handlers);
-	}	
-	
-	public FutureReference register(Trigger trigger, Handler handler) {
-		return list.register(trigger, handler);
-	}
-	
-	public FutureReference compile(String interpretable, Handler[] handlers) throws ParseException, TriggerException{ 
-		return interpreter.compile(interpretable, handlers);
-	}
-	
-	public FutureReference compile(String interpretable, Handler handler) throws ParseException, TriggerException{
-		Handler[] h = {handler};
-		return compile(interpretable, h);
+		Enumeration e = tickables.elements();
+		while(e.hasMoreElements()) {
+			Tickable tickable = (Tickable)e.nextElement();
+			tickable.tick();
+		}
+		checkEvents();
 	}
 }

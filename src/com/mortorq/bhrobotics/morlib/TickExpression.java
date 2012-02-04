@@ -1,42 +1,39 @@
 package com.mortorq.bhrobotics.morlib;
 
 import jregex.Matcher;
-import jregex.Pattern;
-import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
 
-public class TickExpression implements Expression {
-	private String matchRegex = "every tick";
-	public final static String TYPE = "Tick"; 
-	private Pattern pattern = new Pattern(matchRegex);
+public class TickExpression extends Expression {
 	
-	public String getType() {
-		return TYPE;
-	}
-	
-	public boolean matches(String token) {
-		Matcher matchMaker = pattern.matcher(token);
-		return (matchMaker.find()) && (matchMaker.start() == 0);
+	public TickExpression() {
+		super("every tick");
 	}
 
 	public Context parse(StringBuffer buffer, Node tree) {
-		Matcher matchMaker = pattern.matcher(buffer.readOne());
+		Matcher matchMaker = getMatcher(buffer.readOne());
 		matchMaker.find();
-		buffer.replace((buffer.readOne().substring(matchMaker.end())).trim());
-		Leaf tickLeaf = new Leaf(TYPE);
-		tree.addNode(tickLeaf);
+		int end = matchMaker.end();
+
+		String newToken = buffer.readOne().substring(end); 
+		buffer.replace(newToken);
+		
+		tree.addChild(new TickNode());
+		
 		return new Context(buffer, tree);
 	}
 	
-	public FutureReference makeTrigger(Node tree, Handler[] handlers) {
-		long delay = 0;
-		TimeUnit unit = TimeUnit.MILLISECONDS;
-		if (tree.getData().containsKey(Interpreter.DELAY)) {
-			delay = Long.parseLong((String)(tree.getData(Interpreter.DELAY)));
-			unit = TimeUnit.valueOf((((String)tree.getData(Interpreter.DELAY_UNIT)).toUpperCase()+ "S").trim());
-		}
-		return Reactor.Instance().register(new TickTrigger(delay, unit), handlers);
+	public boolean matchesNode(Node node) {
+		return node instanceof TickNode;
 	}
 	
 	public void clean() {
+	}
+	
+	public static class TickNode extends Leaf {
+
+		public Deployer register(Handler[] handlers) {
+			Deployer deployer = new TickDeployer(handlers);
+			Reactor.getInstance().addDeployer(deployer);
+			return deployer;
+		}
 	}
 }

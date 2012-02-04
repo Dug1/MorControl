@@ -1,25 +1,16 @@
 package com.mortorq.bhrobotics.morlib;
 
-import java.util.Vector;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.Vector;
 
-public class Branch implements Node {
-	private Vector nodes;
-	private String type;
-	private Hashtable data;
+public class Branch extends Node {
+	private Vector nodes = new Vector();
 	
-	public Branch(String t) {
-		type = t;
-		nodes = new Vector();
-		data = new Hashtable();
-	}
-	
-	public void addNode(Node child)  {
+	public void addChild(Node child)  {
 		nodes.addElement(child);
 	}
 	
-	public void removeNode(Node child)  {
+	public void removeChild(Node child)  {
 		nodes.removeElement(child);
 	}
 	
@@ -33,28 +24,9 @@ public class Branch implements Node {
 		}
 		return children;
 	}
-	
-	public void setType(String t) {
-		type = t;
-	}
-	
-	public String getType() {
-		return type;
-	}
-	
-	public Hashtable getData() {
-		return data;
-	}
-	
-	public Object getData(String tag) {
-		return data.get(tag);
-	}
-	
-	public void removeData(String tag) {
-		data.remove(tag);
-	}
 
-	public void putData(String tag, Object newData) {
-		data.put(tag, newData);
+	public Deployer register(Handler[] handlers) {
+		// TODO register method for Branch
+		return null;
 	}
 }

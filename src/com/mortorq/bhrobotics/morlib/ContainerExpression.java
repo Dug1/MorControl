@@ -1,27 +1,18 @@
 package com.mortorq.bhrobotics.morlib;
 
 import java.util.Stack;
-import jregex.Pattern;
-import jregex.Matcher;
 
-public class ContainerExpression implements Expression {
-	private Pattern pattern = new Pattern("[(|)]"); 
-	private Matcher matchMaker = pattern.matcher();
-	private Stack nodeStack = new Stack();
-	public final static String TYPE = "Container";
+public class ContainerExpression extends Expression {;
+	private Stack nodeStack = new Stack();	
 	
-	public String getType() {
-		return TYPE;
-	}	
-	
-	public boolean matches(String token) {
-		return matchMaker.matches(token);
+	public ContainerExpression() {
+		super("[(|)]");
 	}
-
+	
 	public Context parse(StringBuffer buffer, Node tree) {
 		if (buffer.readOne().equals("(")) {
-			Node newNode = new Branch(TYPE); 
-			tree.addNode(newNode);
+			Node newNode = new ContainerNode(); 
+			tree.addChild(newNode);
 			nodeStack.push(tree);
 			buffer.remove();
 			return new Context(buffer, newNode);
@@ -35,7 +26,16 @@ public class ContainerExpression implements Expression {
 		nodeStack.removeAllElements();
 	}
 	
-	public FutureReference makeTrigger(Node tree, Handler[] handlers) throws TriggerException {
-		return Reactor.Instance().getInterpreter().makeTrigger(tree.getChildren()[0], handlers);
+	public boolean matchesNode(Node node) {
+		return node instanceof ContainerNode;
+	}
+	
+	public static class ContainerNode extends Branch {
+
+		public Deployer register(Handler[] handlers) {
+			// TODO register method for ContainerExpression
+			return null;
+		}
+		
 	}
 }

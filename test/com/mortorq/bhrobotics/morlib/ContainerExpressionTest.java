@@ -17,23 +17,22 @@ public class ContainerExpressionTest extends TestCase {
 	public void testMatches() {
 		Assert.assertTrue(nero.matches("("));
 		Assert.assertTrue(nero.matches(")"));
-		Assert.assertFalse(nero.matches("(hello)"));
 	}
 
 	public void testParse() {
 		StringBuffer test = new StringBuffer("()");
-		Node seed = new Branch(ContainerExpression.TYPE);
+		Node seed = new Branch();
 		
 		Context c = nero.parse(test, seed);
 		
-		Assert.assertNotSame(c.currentNode, seed);
-		Assert.assertEquals(1,c.buffer.size());
-		Assert.assertEquals(c.currentNode.getType(), ContainerExpression.TYPE);
+		Assert.assertNotSame(c.getCurrentNode(), seed);
+		Assert.assertEquals(1,c.getBuffer().size());
+		assertTrue(c.getCurrentNode() instanceof ContainerExpression.ContainerNode);
 		
-		c = nero.parse(c.buffer, c.currentNode);
+		c = nero.parse(c.getBuffer(), c.getCurrentNode());
 		
-		Assert.assertSame(c.currentNode, seed);
-		Assert.assertEquals(0,c.buffer.size());
+		Assert.assertSame(c.getCurrentNode(), seed);
+		Assert.assertEquals(0,c.getBuffer().size());
 		Assert.assertEquals(1,seed.getChildren().length);
 	}
 }
