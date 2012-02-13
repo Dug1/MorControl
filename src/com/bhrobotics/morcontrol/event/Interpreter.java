@@ -12,11 +12,22 @@ public class Interpreter {
 	public final static String UNTIL = "Delay";
 	public final static String UNTIL_UNIT = "Delay Unit";
 	public final static String BUTTON_NUMBER = "Button Number";
+	private static Interpreter interpreter;
+	
+	private Interpreter() {
+	}
+	
+	public static Interpreter getInterpreter() {
+		if(interpreter == null) {
+			interpreter = new Interpreter();
+		}
+		return interpreter;
+	}
 	
 	public int size() {
 		return patterns.size();
 	}
-	
+
 	public void removePattern(Expression e) {
 		patterns.removeElement(e);
 	}

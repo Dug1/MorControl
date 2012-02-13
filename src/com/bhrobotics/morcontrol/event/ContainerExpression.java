@@ -31,11 +31,9 @@ public class ContainerExpression extends Expression {;
 	}
 	
 	public static class ContainerNode extends Branch {
-
 		public Deployer register(Handler[] handlers) {
-			// TODO register method for ContainerExpression
-			return null;
+			Node child = getChildren()[0];
+			return child.register(handlers);
 		}
-		
 	}
 }

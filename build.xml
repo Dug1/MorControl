@@ -55,7 +55,8 @@
 				<pathelement location="${squawk.path}" />
 				<pathelement location="${concurrent.path}" />
 				<pathelement location="${junit.path}" />
-				<pathelement location="${mockito.path}" />
+				<pathelement location="${jmock.core}" />
+				<pathelement location="${jmock.cglib}"/>
 				<pathelement location="${src.dir}"/>
 				<pathelement location="${build.dir}"/>
 			</classpath>
@@ -75,7 +76,8 @@
 		<pathelement location="${concurrent.path}" />
         <pathelement location="${sunspot.classpath}" />
         <pathelement location="${junit.path}" />
-        <pathelement location="${mockito.path}" />
+		<pathelement location="${jmock.core}" />
+		<pathelement location="${jmock.cglib}"/>
       </classpath>
       
       <formatter type="plain" />

@@ -1,16 +1,18 @@
 package com.bhrobotics.morcontrol.event;
 
+import com.bhrobotics.morcontrol.Tickable;
+import com.bhrobotics.morcontrol.Ticker;
+
 public abstract class Emitter implements Tickable {
-	
-	protected void emit(Event event) {
-		Reactor.getInstance().addEvent(event);
-	}
-	
 	public void start() {
-		Reactor.getInstance().addTickable(this);
+		Ticker.getInstance().registerTickable(this);
 	}
 	
 	public void stop() {
-		Reactor.getInstance().removeTickable(this);
+		Ticker.getInstance().unregisterTickable(this);
+	}
+	
+	protected void emit(Event event) {
+		Reactor.getInstance().addEvent(event);
 	}
 }

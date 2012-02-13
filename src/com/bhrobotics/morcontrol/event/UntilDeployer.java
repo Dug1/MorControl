@@ -1,6 +1,6 @@
 package com.bhrobotics.morcontrol.event;
 
-public class UntilDeployer extends Emitter implements Deployer {
+public class UntilDeployer extends Timer implements Deployer {
 	private long end;
 	private Handler canceler;
 	

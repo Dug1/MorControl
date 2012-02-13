@@ -1,6 +1,6 @@
 package com.bhrobotics.morcontrol.event;
 
-public class AndDeployer extends Emitter implements Deployer {
+public class AndDeployer extends Timer implements Deployer {
 	private Handler[] handlers;
 	private boolean[] flags;
 	private Deployer[] children;

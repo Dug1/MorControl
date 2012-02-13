@@ -1,12 +1,8 @@
 package com.bhrobotics.morcontrol.event;
 
 import java.util.Enumeration;
-import java.util.Vector;
 
-import edu.emory.mathcs.backport.java.util.concurrent.Executors;
-import edu.emory.mathcs.backport.java.util.concurrent.ScheduledExecutorService;
-import edu.emory.mathcs.backport.java.util.concurrent.ScheduledFuture;
-import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
+import com.bhrobotics.morcontrol.Tickable;
 
 public class Reactor implements Tickable { 
 	//Reactor Singleton
@@ -14,11 +10,10 @@ public class Reactor implements Tickable {
 	private int poolSize = 5;
 	
 	//Inner pools
-	private ScheduledExecutorService threadPool;
-	private Vector tickables;
 	private EventQueue eventQueue;
 	private DeployerRegistry deployerRegistry;
-	private Interpreter interpreter = new Interpreter();
+	
+	private boolean active = false;
 	
 	public static Reactor getInstance() {
 		if(reactor == null) {
@@ -28,6 +23,8 @@ public class Reactor implements Tickable {
 	}
 	
 	private Reactor() {
+		deployerRegistry = new DeployerRegistry();
+		eventQueue = new EventQueue();
 	}
 
 	private Runnable createRunnable(Handler h, Event e) {
@@ -47,8 +44,7 @@ public class Reactor implements Tickable {
         return new Task(h, e);
 	}
 	
-	private ScheduledFuture schedule(Handler h, Event e, long delay) {
-		return threadPool.schedule(createRunnable(h,e),delay,TimeUnit.MILLISECONDS);
+	private void schedule(Handler h, Event e, long delay) {
 	}
 
 	private void fireEvent(Event event, Handler[] handlers) {
@@ -72,10 +68,6 @@ public class Reactor implements Tickable {
 		}
 	}
 	
-	public Interpreter getInterpreter() {
-		return interpreter;
-	}
-	
 	public EventQueue getQueue() {
 		return eventQueue;
 	}
@@ -84,20 +76,10 @@ public class Reactor implements Tickable {
 		return deployerRegistry;
 	}
 	
-	public Vector getTickable() {
-		return tickables;
-	}
-	
-	public void addPattern(Expression e) {
-		interpreter.addPattern(e);
-	}
-	
-	public void removePattern(Expression e) {
-		interpreter.removePattern(e);
-	}
-	
 	public void addEvent(Event event) {
-		eventQueue.addEvent(event);
+		if(active) {
+			eventQueue.addEvent(event);
+		}
 	}
 	
 	public void addDeployer(Deployer deployer) {
@@ -108,33 +90,22 @@ public class Reactor implements Tickable {
 		deployerRegistry.remove(deployer);
 	}
 	
-	public void addTickable(Tickable tickable) {
-		tickables.addElement(tickable);
-	}
-	
-	public void removeTickable(Tickable tickable) {
-		tickables.removeElement(tickable);
-	}
-	
 	public void start() {
-		threadPool = Executors.newScheduledThreadPool(poolSize);
-		tickables = new Vector();
-		eventQueue = new EventQueue();
-		deployerRegistry = new DeployerRegistry();
+		active = true;
 	}
 	
 	public void stop() {
-		threadPool.shutdown();
 		eventQueue.clear();
-		tickables.removeAllElements();
+		active = false;
 	}
 	
 	public void tick() {
-		Enumeration e = tickables.elements();
-		while(e.hasMoreElements()) {
-			Tickable tickable = (Tickable)e.nextElement();
-			tickable.tick();
+		if(active) {
+			checkEvents();
 		}
-		checkEvents();
+	}
+
+	public void newData() {
+		//ignore
 	}
 }

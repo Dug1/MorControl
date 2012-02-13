@@ -1,7 +1,8 @@
 package com.bhrobotics.morcontrol.event;
 
+import com.bhrobotics.morcontrol.Ticker;
 
-public class TickDeployer extends Emitter implements Deployer {
+public class TickDeployer extends Timer implements Deployer {
 	private Handler[] handlers;
 	
 	public TickDeployer(Handler handler) {
@@ -20,7 +21,7 @@ public class TickDeployer extends Emitter implements Deployer {
 	}
 	
 	public void remove() {
-		Reactor.getInstance().removeTickable(this);
+		Ticker.getInstance().unregisterTickable(this);
 	}
 	
 	public Handler[] getHandlers() {

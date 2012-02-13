@@ -1,6 +1,6 @@
 package com.bhrobotics.morcontrol.event;
 
-public class OnceDeployer extends Emitter implements Deployer {
+public class OnceDeployer extends Timer implements Deployer {
 	private Handler[] handlers;
 	
 	public OnceDeployer(Handler handler) {

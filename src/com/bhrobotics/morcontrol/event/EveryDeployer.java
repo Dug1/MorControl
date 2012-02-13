@@ -1,7 +1,9 @@
 package com.bhrobotics.morcontrol.event;
 
+import com.bhrobotics.morcontrol.Ticker;
 
-public class EveryDeployer extends Emitter implements Deployer {
+
+public class EveryDeployer extends Timer implements Deployer {
 	private long startTime = System.currentTimeMillis();
 	private long sinceLast = (long) 0.0;
 	private long lastTime = startTime;
@@ -38,7 +40,7 @@ public class EveryDeployer extends Emitter implements Deployer {
 		}
 		
 		if(!Reactor.getInstance().getRegistry().hasDeployer(this)) {
-			Reactor.getInstance().removeTickable(this);
+			Ticker.getInstance().unregisterTickable(this);
 		}
 	}
 }

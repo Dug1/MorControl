@@ -1,6 +1,6 @@
 package com.bhrobotics.morcontrol.event;
 
-public class DelayEmitter extends Emitter {
+public class DelayEmitter extends Timer {
 	private long endTime;
 	private String target;
 	

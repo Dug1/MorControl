@@ -21,4 +21,8 @@ public class DeployerRegistry {
 	public boolean hasDeployer(Deployer deployer) {
 		return filters.contains(deployer);
 	}
+	
+	public void flush() {
+		filters.removeAllElements();
+	}
  }
